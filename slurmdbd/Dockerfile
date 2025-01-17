@@ -3,7 +3,6 @@ FROM debian:bullseye-slim
 
 # Set environment variables
 ENV SLURM_VERSION=24-05-5-1
-ENV OPENSSL_VERSION=3.0.15
 ENV PYTHON_VERSION=3.12.8
 ENV MUNGE_VERSION=0.5.14
 ENV PMIX_VERSION=5.0.6
@@ -14,7 +13,7 @@ ENV PMIX_PREFIX=/opt/software/pmix
 ENV HWLOC_PREFIX=/opt/software/hwloc
 ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
-
+ENV PATH=/opt/software/slurm/sbin:${PATH:-}
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -22,7 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     curl \
     git \
-    hwloc \
     ca-certificates \
     libhwloc-dev \
     liblua5.3-dev \
@@ -53,14 +51,6 @@ RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
     groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
     groupadd -r munge && useradd -r -g munge -s /bin/false munge
 
-# Install OpenSSL from source
-RUN mkdir -p /usr/src && cd /usr/src && \
-    wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
-    tar -xvf openssl-${OPENSSL_VERSION}.tar.gz && \
-    cd openssl-${OPENSSL_VERSION} && \
-    ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib && \
-    make -j$(nproc) && make install
-
 # Install Python from source
 RUN cd /usr/src && \
     wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
@@ -78,7 +68,10 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     tar -xzf munge-${MUNGE_VERSION}.tar.gz && \
     cd munge-munge-${MUNGE_VERSION} && \
     ./bootstrap && \
-    ./configure --prefix=$MUNGE_PREFIX --sysconfdir=/etc/munge --localstatedir=/var && \
+    CPPFLAGS="-I/usr/local/ssl/include" ./configure \
+        --prefix=$MUNGE_PREFIX \
+        --sysconfdir=/etc/munge \
+        --localstatedir=/var && \
     make -j$(nproc) && make install && \
     mkdir -p /var/lib/munge /var/log/munge /etc/munge && \
     chown -R munge:munge /var/lib/munge /var/log/munge /etc/munge
@@ -114,9 +107,6 @@ RUN mkdir -p /usr/src && cd /usr/src && \
 COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
 COPY entrypoint.sh /entrypoint.sh
 
-# Expose required ports
-EXPOSE 6819
-
 # Clean Up
 RUN chmod +x /entrypoint.sh && \
     chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm && \
@@ -125,7 +115,24 @@ RUN chmod +x /entrypoint.sh && \
     chmod 400 -R /etc/munge/ && \
     rm -rf /usr/src/* /tmp/* /var/tmp/* && \
     rm -rf /usr/share/doc /usr/share/man /usr/share/locale /usr/share/info && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt-get purge -y \
+    build-essential \
+    cmake \
+    git \
+    gcc \
+    make \
+    gettext \
+    linux-headers-amd64 \
+    pkg-config \
+    autoconf \
+    automake \
+    libtool && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
+
+# Expose required ports
+EXPOSE 6819
 
 # Entry point
 ENTRYPOINT ["/entrypoint.sh"]
