@@ -121,7 +121,6 @@ RUN chmod +x /entrypoint.sh && \
     git \
     gcc \
     make \
-    gettext \
     linux-headers-amd64 \
     pkg-config \
     autoconf \
