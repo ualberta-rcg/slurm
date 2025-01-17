@@ -26,8 +26,8 @@ jobs:
           fi
 
       - name: 🐳 Build Docker Image
-        working-directory: ./${GITHUB_REF_NAME}
         run: |
+          cd ${GITHUB_REF_NAME}
           docker build -t $DOCKER_REPO:${GITHUB_REF_NAME} .
 
       - name: 🚀 Push Docker Image
