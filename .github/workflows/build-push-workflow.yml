@@ -31,7 +31,7 @@ jobs:
           docker build -t $DOCKER_REPO:${GITHUB_REF_NAME} .
 
       - name: 🚀 Push Docker Image
-        working-directory: ./${GITHUB_REF_NAME}
         run: |
+          cd ${GITHUB_REF_NAME}      
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
           docker push $DOCKER_REPO:${GITHUB_REF_NAME}
