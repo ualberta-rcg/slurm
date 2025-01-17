@@ -1,0 +1,20 @@
+AuthType=${AUTH_TYPE:-auth/munge}
+DbdHost=${DBD_HOST:-localhost}
+DbdPort=${DBD_PORT:-6819}
+
+StorageType=${STORAGE_TYPE:-accounting_storage/mysql}
+StorageHost=${STORAGE_HOST:-localhost}
+StoragePort=${STORAGE_PORT:-3306}
+StorageUser=${STORAGE_USER:-slurm}
+StoragePass=${STORAGE_PASS:-password}
+StorageLoc=${STORAGE_LOC:-slurm_acct_db}
+
+LogFile=${LOG_FILE:-/var/log/slurm/slurmdbd.log}
+PidFile=${PID_FILE:-/var/run/slurmdbd.pid}
+SlurmUser=${SLURM_USER:-slurm}
+DebugLevel=${DEBUG_LEVEL:-debug}
+
+# Optional: These are other settings you might want to configure
+#AccountingStorageEnforce=${ACCOUNTING_STORAGE_ENFORCE:-none}
+#AccountingStorageHost=${ACCOUNTING_STORAGE_HOST:-localhost}
+#AuthAltTypes=${AUTH_ALT_TYPES:-auth/jwt}
