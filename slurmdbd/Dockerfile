@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gcc \
     make \
+    gettext \
     linux-headers-amd64 \
     pkg-config \
     autoconf \
