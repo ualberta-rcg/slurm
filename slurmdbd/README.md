@@ -21,7 +21,7 @@ You can customize the `slurmdbd` configuration by setting the following environm
 | `STORAGE_USER`            | `slurm`                    | Username for the database connection.                                      |
 | `STORAGE_PASS`            | `password`                 | Password for the database user.                                            |
 | `STORAGE_LOC`             | `slurm_acct_db`            | Database name for Slurm accounting.                                        |
-| `LOG_FILE`                | `/var/log/slurm/slurmdbd.log` | Path to the `slurmdbd` log file.                                          |
+| `LOG_FILE`                | `/var/log/slurm/slurm-dbd.log` | Path to the `slurmdbd` log file.                                          |
 | `PID_FILE`                | `/var/run/slurmdbd.pid`    | Path to the `slurmdbd` PID file.                                           |
 | `SLURM_USER`              | `slurm`                    | User under which `slurmdbd` runs.                                          |
 | `DEBUG_LEVEL`             | `debug`                    | Log verbosity level (`quiet`, `info`, `debug`).                            |
@@ -70,9 +70,10 @@ docker run -d \
   - The Munge key must be mounted to `/etc/munge/munge.key`.
 
 - **Logs** (Optional):
-  - To persist logs, you can mount the log directory:
+  - To persist logs, you can mount the log directory, but you need to update the LOG_FILE:
     ```bash
     -v /path/to/logs:/var/log/slurm
+    -e LOG_FILE=/var/log/slurm/slurmdbd.log
     ```
 
 ---
