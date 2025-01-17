@@ -70,9 +70,9 @@ docker run -d \
   - The Munge key must be mounted to `/etc/munge/munge.key`.
 
 - **Logs** (Optional):
-  - To persist logs, you can mount the log directory, but you need to update the LOG_FILE:
+  - If you want to persist logs to a file, mount a directory for logs and set the LOG_FILE environment variable to point to the desired log file location:
     ```bash
-    -v /path/to/logs:/var/log/slurm
+    -v /path/to/logs:/var/log/slurm \
     -e LOG_FILE=/var/log/slurm/slurmdbd.log
     ```
 
