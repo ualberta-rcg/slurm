@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Redirect logs to stdout and stderr for Kubernetes
-if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmdbd.log" ]; then
+if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurm-dbd.log" ]; then
   export LOG_FILE=/dev/stdout
 fi
 
