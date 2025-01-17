@@ -21,6 +21,7 @@ if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurm-dbd.log" ]; t
 fi
 
 mkdir -p /var/log/slurm/
+mkdir -p /var/run/munge/
 touch /var/log/slurm/slurm-dbd.log
 
 # Read and substitute the template
@@ -31,6 +32,7 @@ done < /etc/slurm/slurmdbd.conf.template > /etc/slurm/slurmdbd.conf
 chmod 600 /etc/slurm/slurmdbd.conf
 chmod 400 /etc/munge/munge.key
 chown munge:munge /etc/munge/munge.key
+chown munge:munge -R /var/run/munge/
 chown slurm:slurm /etc/slurm/slurmdbd.conf
 chown slurm:slurm -R /var/log/slurm
 # Run slurmdbd
