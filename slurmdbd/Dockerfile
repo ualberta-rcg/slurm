@@ -7,6 +7,7 @@ ENV OPENSSL_VERSION=3.0.15
 ENV PYTHON_VERSION=3.12.8
 ENV MUNGE_VERSION=0.5.14
 ENV PMIX_VERSION=5.0.6
+ENV HWLOC_VERSION=2.9.3
 ENV PREFIX=/opt/software/slurm
 ENV MUNGE_PREFIX=/opt/software/munge
 ENV PMIX_PREFIX=/opt/software/pmix
@@ -47,9 +48,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libtool && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
-# Add users and groups for Munge and Slurm
-RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
+# Add runtime configurations, users and groups for Munge and Slurm
+RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
+    groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
     groupadd -r munge && useradd -r -g munge -s /bin/false munge
 
 # Install OpenSSL from source
@@ -67,8 +68,9 @@ RUN cd /usr/src && \
     cd Python-${PYTHON_VERSION} && \
     ./configure --enable-optimizations && \
     make -j$(nproc) && make altinstall && \
-    ln -s /usr/local/bin/python3.10 /usr/local/bin/python3 && \
-    ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip3
+    ln -s /usr/local/bin/python${PYTHON_VERSION%.*} /usr/local/bin/python3 && \
+    ln -s /usr/local/bin/pip${PYTHON_VERSION%.*} /usr/local/bin/pip3  && \
+    ln -s /usr/local/bin/python${PYTHON_VERSION%.*} /usr/bin/python3
 
 # Build and install MUNGE
 RUN mkdir -p /usr/src && cd /usr/src && \
@@ -89,9 +91,9 @@ RUN mkdir -p /usr/src && cd /usr/src && \
 
 # Install HWLOC from source (if needed for Slurm)
 RUN mkdir -p /usr/src && cd /usr/src && \
-    wget https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.0.tar.gz && \
-    tar -xzf hwloc-2.9.0.tar.gz && \
-    cd hwloc-2.9.0 && \
+    wget https://download.open-mpi.org/release/hwloc/v${HWLOC_VERSION%.*}/hwloc-${HWLOC_VERSION}.tar.gz && \
+    tar -xzf hwloc-${HWLOC_VERSION}.tar.gz && \
+    cd hwloc-${HWLOC_VERSION} && \
     ./configure --prefix=$HWLOC_PREFIX && make -j$(nproc) && make install
 
 
@@ -109,12 +111,15 @@ RUN mkdir -p /usr/src && cd /usr/src && \
                 --enable-lua && \
     make -j$(nproc) && make install
 
-# Add runtime configurations
-RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
-    chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm
+COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
+COPY entrypoint.sh /entrypoint.sh
 
 # Expose required ports
-EXPOSE 6817 6818 6819
+EXPOSE 6819
 
 # Entry point
-CMD ["/bin/bash"]
+RUN chmod +x /entrypoint.sh && \
+    chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["-D", "-s", "-v"]
