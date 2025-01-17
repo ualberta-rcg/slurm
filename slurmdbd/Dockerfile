@@ -13,7 +13,8 @@ ENV MUNGE_PREFIX=/opt/software/munge
 ENV PMIX_PREFIX=/opt/software/pmix
 ENV HWLOC_PREFIX=/opt/software/hwloc
 ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:$PATH
-ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
+
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -45,8 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     libssl-dev \
-    libtool && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    libtool
 
 # Add runtime configurations, users and groups for Munge and Slurm
 RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
@@ -117,9 +117,16 @@ COPY entrypoint.sh /entrypoint.sh
 # Expose required ports
 EXPOSE 6819
 
-# Entry point
+# Clean Up
 RUN chmod +x /entrypoint.sh && \
-    chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm
+    chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm && \
+    mkdir -p /etc/munge/ && \
+    chown munge:munge -R /etc/munge && \
+    chmod 400 -R /etc/munge/ && \
+    rm -rf /usr/src/* /tmp/* /var/tmp/* && \
+    rm -rf /usr/share/doc /usr/share/man /usr/share/locale /usr/share/info && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Entry point
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["-D", "-s", "-v"]
