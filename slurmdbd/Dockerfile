@@ -6,14 +6,11 @@ ENV SLURM_VERSION=24-05-5-1
 ENV PYTHON_VERSION=3.12.8
 ENV MUNGE_VERSION=0.5.14
 ENV PMIX_VERSION=5.0.6
-ENV HWLOC_VERSION=2.9.3
 ENV PREFIX=/opt/software/slurm
 ENV MUNGE_PREFIX=/opt/software/munge
 ENV PMIX_PREFIX=/opt/software/pmix
-ENV HWLOC_PREFIX=/opt/software/hwloc
-ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:$PATH
+ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:/opt/software/slurm/sbin:${PATH:-}
 ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
-ENV PATH=/opt/software/slurm/sbin:${PATH:-}
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -24,11 +21,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libhwloc-dev \
     liblua5.3-dev \
-    mariadb-client \
-    libmunge-dev \
+    #libmunge-dev \
     libnuma-dev \
     libpam0g-dev \
-    libpmix-dev \
+    #libpmix-dev \
     libreadline-dev \
     rrdtool \
     libyaml-dev \
@@ -44,8 +40,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     libssl-dev \
-    libtool
-
+    libtool   \
+    libhdf5-dev \
+    libmariadb-dev \
+    libjwt-dev \
+    libreadline-dev \
+    libhttp-parser-dev \
+    libjson-c-dev \
+    libyaml-dev \
+    libgtk2.0-dev \
+    libcurl4-openssl-dev \
+    libbpf-dev \
+    libdbus-1-dev \
+    libibumad-dev \
+    libfreeipmi17 \
+    libibmad-dev
+  
 # Add runtime configurations, users and groups for Munge and Slurm
 RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
     groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
@@ -82,14 +92,6 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     tar -xzf pmix-${PMIX_VERSION}.tar.gz && cd pmix-${PMIX_VERSION} && \
     ./configure --prefix=$PMIX_PREFIX && make -j$(nproc) && make install
 
-# Install HWLOC from source (if needed for Slurm)
-RUN mkdir -p /usr/src && cd /usr/src && \
-    wget https://download.open-mpi.org/release/hwloc/v${HWLOC_VERSION%.*}/hwloc-${HWLOC_VERSION}.tar.gz && \
-    tar -xzf hwloc-${HWLOC_VERSION}.tar.gz && \
-    cd hwloc-${HWLOC_VERSION} && \
-    ./configure --prefix=$HWLOC_PREFIX && make -j$(nproc) && make install
-
-
 # Download and build Slurm
 RUN mkdir -p /usr/src && cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
@@ -109,10 +111,6 @@ COPY entrypoint.sh /entrypoint.sh
 
 # Clean Up
 RUN chmod +x /entrypoint.sh && \
-    chown slurm:slurm /etc/slurm /var/spool/slurm /var/log/slurm && \
-    mkdir -p /etc/munge/ && \
-    chown munge:munge -R /etc/munge && \
-    chmod 400 -R /etc/munge/ && \
     rm -rf /usr/src/* /tmp/* /var/tmp/* && \
     rm -rf /usr/share/doc /usr/share/man /usr/share/locale /usr/share/info && \
     apt-get purge -y \
@@ -120,7 +118,10 @@ RUN chmod +x /entrypoint.sh && \
     cmake \
     git \
     gcc \
+    curl \
+    wget \
     make \
+    man-db \    
     linux-headers-amd64 \
     pkg-config \
     autoconf \
