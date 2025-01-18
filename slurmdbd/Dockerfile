@@ -68,9 +68,9 @@ RUN cd /usr/src && \
     cd Python-${PYTHON_VERSION} && \
     ./configure --enable-optimizations && \
     make -j$(nproc) && make altinstall && \
-    ln -s /usr/local/bin/python${PYTHON_VERSION%.*} /usr/local/bin/python3 && \
-    ln -s /usr/local/bin/pip${PYTHON_VERSION%.*} /usr/local/bin/pip3  && \
-    ln -s /usr/local/bin/python${PYTHON_VERSION%.*} /usr/bin/python3
+    ln -sf /usr/local/bin/python${PYTHON_VERSION%.*} /usr/local/bin/python3 && \
+    ln -sf /usr/local/bin/pip${PYTHON_VERSION%.*} /usr/local/bin/pip3  && \
+    ln -sf /usr/local/bin/python${PYTHON_VERSION%.*} /usr/bin/python3
 
 # Build and install MUNGE
 RUN mkdir -p /usr/src && cd /usr/src && \
@@ -80,7 +80,7 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     ./bootstrap && \
     CPPFLAGS="-I/usr/local/ssl/include" ./configure \
         --prefix=$MUNGE_PREFIX \
-        --sysconfdir=/etc/munge \
+        --sysconfdir=/etc \
         --localstatedir=/var && \
     make -j$(nproc) && make install && \
     mkdir -p /var/lib/munge /var/log/munge /etc/munge && \
