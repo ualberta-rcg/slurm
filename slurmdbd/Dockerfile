@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #libmunge-dev \
     libnuma-dev \
     libpam0g-dev \
-    #libpmix-dev \
+    libpmix-dev \
     libreadline-dev \
     rrdtool \
     libyaml-dev \
