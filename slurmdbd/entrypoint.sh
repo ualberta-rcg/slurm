@@ -20,6 +20,7 @@ chmod 600 /etc/slurm/slurmdbd.conf
 # Munge
 mkdir -p /var/run/munge/
 mkdir -p /var/lib/munge/
+mkdir -p /var/log/munge/
 cp /etc/munge/munge/munge.key /etc/munge/
 chmod 400 /etc/munge/munge.key
 chmod 700 /var/lib/munge
@@ -28,10 +29,11 @@ chmod 750 -R /etc/munge
 chown munge:munge -R /etc/munge
 chown munge:munge -R /var/run/munge
 chown munge:munge -R /var/lib/munge
+chown munge:munge -R /var/log/munge
 chown munge:munge -R /run/munge
 chmod 755 /run/munge 
 
-su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground -f &" munge
+su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
 
 # Run slurmdbd
 exec slurmdbd "$@"
