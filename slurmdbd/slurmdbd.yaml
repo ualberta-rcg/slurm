@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: slurm
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: slurmdbd
+  namespace: slurm
+spec:
+  selector:
+    matchLabels:
+      app: slurmdbd
+  template:
+    metadata:
+      labels:
+        app: slurmdbd
+    spec:
+      containers:
+      - name: slurmdbd
+        image: rkhoja/slurm:slurmdbd
+        imagePullPolicy: Always
+        env:
+        - name: STORAGE_HOST
+          value: paice-db-pxc-db-haproxy.percona-db-cluster.svc.cluster.local # Percona cluster service name
+        - name: STORAGE_PORT
+          value: "3306"
+        - name: STORAGE_USER
+          value: root
+        - name: STORAGE_PASS
+          valueFrom:
+            secretKeyRef:
+              name: paice-db-pxc-db-secrets
+              key: root
+        - name: STORAGE_LOC
+          value: "slurm_acct_db" # Or your desired database name
+        - name: AUTH_TYPE
+          value: "auth/munge"
+        volumeMounts:
+        - name: munge-key
+          mountPath: /etc/munge/munge/
+          readOnly: true
+      volumes:
+      - name: munge-key
+        secret:
+          secretName: slurm
+          items:
+          - key: munge
+            path: munge.key
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmdbd-service
+  namespace: slurm
+spec:
+  selector:
+    app: slurmdbd
+  ports:
+  - port: 6819 # The port used by slurmdbd
+    targetPort: 6819
+    protocol: TCP
+  sessionAffinity: ClientIP # Enable sticky sessions
+  type: LoadBalancer # Or NodePort for bare-metal, depending on your setup
