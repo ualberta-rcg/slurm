@@ -30,6 +30,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libyaml-dev \
     libjson-c-dev \
     libhttp-parser-dev \
+    libev-dev \
+    libev4 \
     man-db \
     wget \
     gcc \
