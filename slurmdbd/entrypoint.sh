@@ -32,6 +32,7 @@ chmod 700 /var/run/munge/
 chmod 750 -R /etc/munge
 chmod 400 /etc/munge/munge.key
 chmod 755 /run/munge
+cp /opt/software/munge/bin/* /usr/local/bin
 
 su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
 
