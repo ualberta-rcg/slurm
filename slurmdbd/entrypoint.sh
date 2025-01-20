@@ -21,7 +21,7 @@ chmod 600 /etc/slurm/slurmdbd.conf
 mkdir -p /var/run/munge/
 mkdir -p /var/lib/munge/
 mkdir -p /var/log/munge/
-cp /etc/munge/munge/munge.key /etc/munge/
+cat /etc/munge/munge/munge.key | base64 -d > /etc/munge/munge.key
 chown munge:munge -R /etc/munge
 chown munge:munge -R /var/run/munge
 chown munge:munge -R /var/lib/munge
