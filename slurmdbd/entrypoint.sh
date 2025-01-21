@@ -11,8 +11,8 @@ while IFS= read -r line; do
 done < /etc/slurm/slurmdbd.conf.template > /etc/slurm/slurmdbd.conf
 
 # Slurm 
-chown slurm:slurm /etc/slurm/slurmdbd.conf
-chown slurm:slurm -R /var/log/slurm
+#chown slurm:slurm /etc/slurm/slurmdbd.conf
+#chown slurm:slurm -R /var/log/slurm
 chmod 600 /etc/slurm/slurmdbd.conf
 
 # Munge
