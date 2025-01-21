@@ -39,12 +39,11 @@ spec:
           value: "auth/munge"
         volumeMounts:
         - name: munge-key
-          mountPath: /etc/munge/
+          mountPath: /etc/munge/.secret
       volumes:
       - name: munge-key
         secret:
           secretName: slurm
-          defaultMode: 0400
           items:
           - key: munge
             path: munge.keyfile
