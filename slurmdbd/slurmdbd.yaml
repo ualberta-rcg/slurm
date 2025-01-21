@@ -39,7 +39,7 @@ spec:
           value: "auth/munge"
         volumeMounts:
         - name: munge-key
-          mountPath: /etc/munge/.secret
+          mountPath: /etc/munge/.secret/
       volumes:
       - name: munge-key
         secret:
