@@ -59,9 +59,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libibmad-dev
   
 # Add runtime configurations, users and groups for Munge and Slurm
-RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm && \
+RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm /var/run/munge /var/lib/munge /var/log/munge /etc/munge && \
     groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
-    groupadd -r munge && useradd -r -g munge -s /bin/false munge
+    groupadd -r munge && useradd -r -g munge -s /bin/false munge && \
+    touch /var/log/slurm/slurm-dbd.log && \
+    chown slurm:slurm -R /var/log/slurm && \
+    chown munge:munge -R /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
+    chmod 700 /var/lib/munge /var/run/munge && \
+    chmod 750 -R /etc/munge && \
+    chmod 755 /run/munge
 
 # Install Python from source
 RUN cd /usr/src && \
