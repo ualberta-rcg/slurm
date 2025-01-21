@@ -88,7 +88,6 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \ 
     cp /opt/software/munge/bin/* /usr/local/bin && \
     chmod 700 /var/lib/munge /var/run/munge && \
-    chmod 750 -R /etc/munge && \
     chmod 755 /run/munge
 
 # Build and install PMIx
