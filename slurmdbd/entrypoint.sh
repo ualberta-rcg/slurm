@@ -16,11 +16,11 @@ done < /etc/slurm/slurmdbd.conf.template > /etc/slurm/slurmdbd.conf
 chmod 600 /etc/slurm/slurmdbd.conf
 
 # Munge
-cp /etc/munge/munge.keyfile /etc/munge/munge.key
-#cat /etc/munge/munge/munge.key | base64 -d > /etc/munge/munge.key
+
 chown munge:munge -R /etc/munge
 
 su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
 
 # Run slurmdbd
 exec slurmdbd "$@"
+
