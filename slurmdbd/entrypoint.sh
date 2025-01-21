@@ -11,16 +11,13 @@ while IFS= read -r line; do
 done < /etc/slurm/slurmdbd.conf.template > /etc/slurm/slurmdbd.conf
 
 # Slurm 
-#chown slurm:slurm /etc/slurm/slurmdbd.conf
-#chown slurm:slurm -R /var/log/slurm
+chown slurm:slurm /etc/slurm/slurmdbd.conf
 chmod 600 /etc/slurm/slurmdbd.conf
 
 # Munge
-
 chown munge:munge -R /etc/munge
 
 su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
 
 # Run slurmdbd
 exec slurmdbd "$@"
-
