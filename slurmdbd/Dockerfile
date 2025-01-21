@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libhwloc-dev \
     liblua5.3-dev \
-    #libmunge-dev \
     libnuma-dev \
     libpam0g-dev \
     libpmix-dev \
