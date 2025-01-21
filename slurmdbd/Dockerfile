@@ -110,7 +110,7 @@ RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm && cd /usr/src 
                 --enable-restd \
                 --enable-lua && \
     make -j$(nproc) && make install && \
-    touch /var/log/slurm/slurm-dbd.log && \
+    touch /var/log/slurm/slurm-dbd.log
     
 
 COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
