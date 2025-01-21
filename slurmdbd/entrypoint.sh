@@ -15,7 +15,7 @@ chown slurm:slurm /etc/slurm/slurmdbd.conf
 chmod 600 /etc/slurm/slurmdbd.conf
 
 # Munge
-cp /etc/munge/munge.keyfile /etc/munge/munge.key
+cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
 chown munge:munge -R /etc/munge
 
 su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
