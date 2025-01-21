@@ -59,15 +59,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libibmad-dev
   
 # Add runtime configurations, users and groups for Munge and Slurm
-RUN mkdir -p /etc/slurm /var/spool/slurm /var/log/slurm /var/run/munge /var/lib/munge /var/log/munge /etc/munge && \
-    groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
-    groupadd -r munge && useradd -r -g munge -s /bin/false munge && \
-    touch /var/log/slurm/slurm-dbd.log && \
-    chown slurm:slurm -R /var/log/slurm && \
-    chown munge:munge -R /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
-    chmod 700 /var/lib/munge /var/run/munge && \
-    chmod 750 -R /etc/munge && \
-    chmod 755 /run/munge
+RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
+    groupadd -r munge && useradd -r -g munge -s /bin/false munge 
 
 # Install Python from source
 RUN cd /usr/src && \
@@ -91,8 +84,12 @@ RUN mkdir -p /usr/src && cd /usr/src && \
         --sysconfdir=/etc \
         --localstatedir=/var && \
     make -j$(nproc) && make install && \
-    mkdir -p /var/lib/munge /var/log/munge /etc/munge && \
-    chown -R munge:munge /var/lib/munge /var/log/munge /etc/munge
+    mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
+    chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \ 
+    cp /opt/software/munge/bin/* /usr/local/bin && \
+    chmod 700 /var/lib/munge /var/run/munge && \
+    chmod 750 -R /etc/munge && \
+    chmod 755 /run/munge
 
 # Build and install PMIx
 RUN mkdir -p /usr/src && cd /usr/src && \
@@ -101,7 +98,7 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     ./configure --prefix=$PMIX_PREFIX && make -j$(nproc) && make install
 
 # Download and build Slurm
-RUN mkdir -p /usr/src && cd /usr/src && \
+RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm && cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && cd slurm-slurm-${SLURM_VERSION} && \
     ./configure --prefix=$PREFIX \
@@ -112,7 +109,9 @@ RUN mkdir -p /usr/src && cd /usr/src && \
                 --enable-pam \
                 --enable-restd \
                 --enable-lua && \
-    make -j$(nproc) && make install
+    make -j$(nproc) && make install && \
+    touch /var/log/slurm/slurm-dbd.log && \
+    
 
 COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
 COPY entrypoint.sh /entrypoint.sh
