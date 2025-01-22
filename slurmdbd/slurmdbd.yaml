@@ -65,7 +65,7 @@ spec:
   selector:
     app: slurmdbd
   ports:
-  - name: 6819-6819
+  - name: slurmdbd
     port: 6819
     protocol: TCP
     targetPort: 6819
