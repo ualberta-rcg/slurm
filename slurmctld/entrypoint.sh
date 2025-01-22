@@ -6,6 +6,7 @@ if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmctld.log" ]; t
 fi
 
 # Set proper permissions for slurm.conf
+mkdir -p /var/spool/slurmctld /var/log/slurm/ 
 chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm/
 chmod 644 /etc/slurm/slurm.conf
 
@@ -34,4 +35,4 @@ counter=0
 #done
 
 # Run slurmctld as the slurm user
-exec su -s /bin/bash -c "slurmctld \"$@\"" slurm
+exec /bin/su -s /bin/bash -c "/opt/software/slurm/sbin/slurmctld \"$@\"" slurm
