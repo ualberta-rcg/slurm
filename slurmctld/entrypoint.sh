@@ -6,7 +6,7 @@ if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmctld.log" ]; t
 fi
 
 # Set proper permissions for slurm.conf
-chown -R slurm:slurm /etc/slurm
+chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm/
 chmod 644 /etc/slurm/slurm.conf
 
 # Setup Munge
@@ -33,5 +33,5 @@ counter=0
 #    echo "Waiting for slurmdbd to become available..."
 #done
 
-# Run slurmctld in foreground mode
-exec slurmctld "$@"
+# Run slurmctld as the slurm user
+exec su -s /bin/bash -c "slurmctld \"$@\"" slurm
