@@ -33,5 +33,5 @@ counter=0
 #    echo "Waiting for slurmdbd to become available..."
 #done
 
-# Run slurmctld in foreground mode
-exec slurmctld "$@"
+# Run slurmctld as the slurm user
+exec su -s /bin/bash -c "slurmctld \"$@\"" slurm
