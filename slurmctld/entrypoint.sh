@@ -7,7 +7,7 @@ fi
 
 # Set proper permissions for slurm.conf
 mkdir -p /var/spool/slurmctld /var/log/slurm/ 
-chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm/
+chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm /opt/software/slurm/sbin
 chmod 644 /etc/slurm/slurm.conf
 
 # Setup Munge
