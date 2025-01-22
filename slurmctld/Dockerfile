@@ -96,7 +96,7 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     ./configure --prefix=$PMIX_PREFIX && make -j$(nproc) && make install
 
 # Download and build Slurm
-RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm && cd /usr/src && \
+RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && cd slurm-slurm-${SLURM_VERSION} && \
     ./configure --prefix=$PREFIX \
@@ -109,9 +109,7 @@ RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm && cd /usr/src 
                 --enable-lua && \
     make -j$(nproc) && make install && \
     touch /var/log/slurm/slurm-dbd.log
-    
 
-COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
 COPY entrypoint.sh /entrypoint.sh
 
 # Clean Up
@@ -137,7 +135,7 @@ RUN chmod +x /entrypoint.sh && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
 
 # Expose required ports
-EXPOSE 6819
+EXPOSE 6817
 
 # Entry point
 ENTRYPOINT ["/entrypoint.sh"]
