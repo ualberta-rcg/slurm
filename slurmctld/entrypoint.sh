@@ -24,15 +24,15 @@ sleep 2
 # Verify that the slurmdbd is accessible before starting slurmctld
 timeout=60
 counter=0
-#while ! sacctmgr show cluster &>/dev/null; do
-#    sleep 5
-#    counter=$((counter + 2))
-#    if [ $counter -ge $timeout ]; then
-#        echo "Timeout waiting for slurmdbd to become available"
-#        exit 1
-#    fi
-#    echo "Waiting for slurmdbd to become available..."
-#done
+while ! sacctmgr show cluster &>/dev/null; do
+    sleep 5
+    counter=$((counter + 2))
+    if [ $counter -ge $timeout ]; then
+        echo "Timeout waiting for slurmdbd to become available"
+        exit 1
+    fi
+    echo "Waiting for slurmdbd to become available..."
+done
 
 # Run slurmctld as the slurm user
 exec /bin/su -s /bin/bash -c "/opt/software/slurm/sbin/slurmctld \"$@\"" slurm
