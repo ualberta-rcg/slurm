@@ -5,17 +5,6 @@ if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmctld.log" ]; t
   export LOG_FILE=/dev/stdout
 fi
 
-# Create necessary directories if they don't exist
-mkdir -p /var/spool/slurmctld
-mkdir -p /var/log/slurm
-
-# Set proper permissions
-chown slurm:slurm /var/spool/slurmctld
-chown slurm:slurm /var/log/slurm
-chmod 755 /var/spool/slurmctld
-chmod 755 /var/log/slurm
-
-
 # Set proper permissions for slurm.conf
 chown -R slurm:slurm /etc/slurm
 chmod 644 /etc/slurm/slurm.conf
@@ -45,4 +34,4 @@ while ! sacctmgr show cluster &>/dev/null; do
 done
 
 # Run slurmctld in foreground mode
-exec slurmctld -D -vvv "$@"
+exec slurmctld "$@"
