@@ -1,10 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment  # Using Deployment instead of DaemonSet since we want only one controller
+kind: Deployment  
 metadata:
   name: slurmctld
   namespace: slurm
 spec:
-  replicas: 1  # Only one controller should be active
+  replicas: 1  
   selector:
     matchLabels:
       app: slurmctld
