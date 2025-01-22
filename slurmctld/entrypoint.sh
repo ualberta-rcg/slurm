@@ -35,4 +35,4 @@ while ! sacctmgr show cluster &>/dev/null; do
 done
 
 # Run slurmctld as the slurm user
-exec su -s /bin/bash slurm -c "/opt/software/slurm/sbin/slurmctld $@"
+exec su -s /bin/bash -c "/opt/software/slurm/sbin/slurmctld $@" slurm 
