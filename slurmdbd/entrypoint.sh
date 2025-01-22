@@ -21,5 +21,8 @@ chmod 400 /etc/munge/munge.key
 
 su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log  &" munge
 
+# Wait briefly for munge to start
+sleep 2
+
 # Run slurmdbd
 exec slurmdbd "$@"
