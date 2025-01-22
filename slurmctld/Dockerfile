@@ -139,5 +139,5 @@ RUN chmod +x /entrypoint.sh && \
 EXPOSE 6817
 
 # Entry point
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 CMD ["-Dvvv", "-s"]
