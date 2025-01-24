@@ -8,7 +8,7 @@ fi
 # Set proper permissions for slurm.conf
 mkdir -p /var/spool/slurmctld /var/log/slurm/ 
 chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm /opt/software/slurm/sbin
-chmod 644 /etc/slurm/slurm.conf
+chmod 644 /etc/slurm/*.conf
 
 # Setup Munge
 cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
@@ -33,6 +33,22 @@ while ! sacctmgr show cluster &>/dev/null; do
     fi
     echo "Waiting for slurmdbd to become available..."
 done
+
+# Start monitoring Slurm configuration files for changes
+CONFIG_FILES=(
+    "/etc/slurm/slurm.conf"
+    "/etc/slurm/gres.conf"
+    "/etc/slurm/cgroup.conf"
+)
+
+echo "Monitoring configuration files for changes: ${CONFIG_FILES[*]}..."
+
+(
+    inotifywait -m -e modify "${CONFIG_FILES[@]}" | while read -r path event file; do
+        echo "$file in $path has changed. Reloading Slurm configuration..."
+        su -s /bin/bash slurm -c "/opt/software/slurm/sbin/scontrol reconfigure"
+    done
+) &
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/opt/software/slurm/sbin/slurmctld $*"
