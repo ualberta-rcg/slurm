@@ -55,8 +55,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libdbus-1-dev \
     libibumad-dev \
     libfreeipmi17 \
-    libibmad-dev \
-    inotify-tools
+    libibmad-dev
   
 # Add runtime configurations, users and groups for Munge and Slurm
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
