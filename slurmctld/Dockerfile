@@ -134,7 +134,8 @@ RUN chmod +x /entrypoint.sh && \
     libtool && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* && \
+    touch /etc/hosts.d/warewulf
 
 # Expose required ports
 EXPOSE 6817
