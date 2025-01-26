@@ -57,9 +57,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreeipmi17 \
     libibmad-dev
   
-# Add runtime configurations, users and groups for Munge and Slurm
+# Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
-    groupadd -r munge && useradd -r -g munge -s /bin/false munge 
+    groupadd -r munge && useradd -r -g munge -s /bin/false munge && \
+    groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
 # Install Python from source
 RUN cd /usr/src && \
@@ -142,4 +143,4 @@ EXPOSE 6817
 
 # Entry point
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-CMD ["-Dvvv", "-s"]
+CMD ["-D", "-R", "-vvv", "-i", "-s", "--systemd"]
