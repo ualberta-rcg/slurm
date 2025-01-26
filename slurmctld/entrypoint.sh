@@ -41,14 +41,38 @@ CONFIG_FILES=(
     "/etc/slurm/cgroup.conf"
 )
 
-echo "Monitoring configuration files for changes: ${CONFIG_FILES[*]}..."
+# Function to monitor configuration files
+monitor_config_files() {
+    declare -A FILE_CHECKSUMS
 
-(
-    inotifywait -m -e modify "${CONFIG_FILES[@]}" | while read -r path event file; do
-        echo "$file in $path has changed. Reloading Slurm configuration..."
-        su -s /bin/bash slurm -c "/opt/software/slurm/sbin/scontrol reconfigure"
+    # Initialize checksums
+    for file in "${CONFIG_FILES[@]}"; do
+        if [[ -f $file ]]; then
+            FILE_CHECKSUMS["$file"]=$(md5sum "$file" | awk '{print $1}')
+        else
+            FILE_CHECKSUMS["$file"]=""
+        fi
     done
-) &
+
+    echo "Monitoring configuration files for changes..."
+
+    while true; do
+        for file in "${CONFIG_FILES[@]}"; do
+            if [[ -f $file ]]; then
+                NEW_CHECKSUM=$(md5sum "$file" | awk '{print $1}')
+                if [[ "${FILE_CHECKSUMS["$file"]}" != "$NEW_CHECKSUM" ]]; then
+                    echo "Change detected in $file. Reloading SLURM configuration..."
+                    su -s /bin/bash slurm -c "/opt/software/slurm/bin/scontrol reconfigure"
+                    FILE_CHECKSUMS["$file"]="$NEW_CHECKSUM"
+                fi
+            fi
+        done
+        sleep 5  # Adjust the interval as needed
+    done
+}
+
+# Start monitoring in the background
+(monitor_config_files) &
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/opt/software/slurm/sbin/slurmctld $*"
