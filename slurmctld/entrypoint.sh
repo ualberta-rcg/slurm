@@ -23,7 +23,7 @@ sleep 2
 
 # Create hosts-original 
 cp /etc/hosts /etc/hosts-original
-cat /etc/hosts.d/warewulf >> /etc/hosts
+cat /etc/hosts.d/hosts >> /etc/hosts
 
 # Verify that the slurmdbd is accessible before starting slurmctld
 timeout=60
@@ -73,7 +73,7 @@ monitor_config_files() {
                         echo "Updating /etc/hosts with contents from /etc/hosts.d/warewulf..."
                         if [[ -f /etc/hosts-original ]]; then
                             cat /etc/hosts-original > /etc/hosts  # Start with the original hosts file
-                            cat /etc/hosts.d/warewulf >> /etc/hosts  # Append warewulf contents
+                            cat /etc/hosts.d/hosts >> /etc/hosts  # Append warewulf contents
                             echo "/etc/hosts updated successfully."
                         else
                             echo "Error: /etc/hosts-original does not exist!"
