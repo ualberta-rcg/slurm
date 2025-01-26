@@ -62,7 +62,7 @@ monitor_config_files() {
                 NEW_CHECKSUM=$(md5sum "$file" | awk '{print $1}')
                 if [[ "${FILE_CHECKSUMS["$file"]}" != "$NEW_CHECKSUM" ]]; then
                     echo "Change detected in $file. Reloading SLURM configuration..."
-                    su -s /bin/bash slurm -c "/opt/software/slurm/sbin/scontrol reconfigure"
+                    su -s /bin/bash slurm -c "/opt/software/slurm/bin/scontrol reconfigure"
                     FILE_CHECKSUMS["$file"]="$NEW_CHECKSUM"
                 fi
             fi
