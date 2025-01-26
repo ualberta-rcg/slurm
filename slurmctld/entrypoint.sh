@@ -36,6 +36,7 @@ done
 
 # Start monitoring Slurm configuration files for changes
 CONFIG_FILES=(
+    "/etc/hosts.d/warewulf"
     "/etc/slurm/slurm.conf"
     "/etc/slurm/gres.conf"
     "/etc/slurm/cgroup.conf"
