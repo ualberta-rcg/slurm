@@ -6,7 +6,7 @@ if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmctld.log" ]; t
 fi
 
 # Set proper permissions for slurm.conf
-mkdir -p /var/spool/slurmctld /var/log/slurm/ 
+mkdir -p /var/spool/slurmctld /var/log/slurm/ /var/run/slurm
 chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/run/slurm /var/log/slurm /opt/software/slurm/sbin
 chmod 644 /etc/slurm/*.conf
 
