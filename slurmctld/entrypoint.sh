@@ -7,7 +7,7 @@ fi
 
 # Set proper permissions for slurm.conf
 mkdir -p /var/spool/slurmctld /var/log/slurm/ 
-chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/log/slurm /opt/software/slurm/sbin
+chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/run/slurm /var/log/slurm /opt/software/slurm/sbin
 chmod 644 /etc/slurm/*.conf
 
 # Setup Munge
@@ -40,7 +40,7 @@ done
 
 # Start monitoring Slurm configuration files for changes
 CONFIG_FILES=(
-    "/etc/hosts.d/warewulf"
+    "/etc/hosts.d/hosts"
     "/etc/slurm/slurm.conf"
     "/etc/slurm/gres.conf"
     "/etc/slurm/cgroup.conf"
