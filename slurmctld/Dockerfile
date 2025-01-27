@@ -65,6 +65,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     zlib1g-dev \
     gettext \
+    libpam0g-dev \
+    libjwt-dev \
     lua5.3 \
     liblua5.3-dev && \
     ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
