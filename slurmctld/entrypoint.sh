@@ -16,7 +16,7 @@ chown munge:munge -R /etc/munge
 chmod 400 /etc/munge/munge.key
 
 # Start munged in the background
-su -s /bin/bash -c "/opt/software/munge/sbin/munged --foreground --log-file=/var/log/munge/munge.log &" munge
+su -s /bin/bash -c "/usr/sbin/munged --foreground --log-file=/var/log/munge/munge.log &" munge
 
 # Wait briefly for munge to start
 sleep 2
