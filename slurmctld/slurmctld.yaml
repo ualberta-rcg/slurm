@@ -28,8 +28,7 @@ spec:
         - name: slurmctld-state
           mountPath: /var/spool/slurmctld
         - name: warewulf-hosts
-          mountPath: /etc/hosts.d/
-          subPath: warewulf     
+          mountPath: /etc/hosts.d
 #         command: ["/bin/bash", "-c"]
 #         args:
 #           - |
@@ -52,7 +51,7 @@ spec:
       - name: warewulf-hosts
         nfs:
           server: 192.168.1.1
-          path: /disks/warewulf/etc/hosts    
+          path: /disks/warewulf/etc/
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
