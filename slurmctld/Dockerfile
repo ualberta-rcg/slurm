@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libhwloc15 \
     libtool \
+    libssl-dev \
     zlib1g-dev \
     liblua5.3-0 \
     libnuma1 \
@@ -167,6 +168,7 @@ RUN chmod +x /entrypoint.sh && \
     pkg-config \
     autoconf \
     automake \
+    libssl-dev \
     libtool && \
     apt-get autoremove -y && \
     apt-get clean && \
