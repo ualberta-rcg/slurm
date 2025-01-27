@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
     libhwloc15 \
+    zlib1g-dev \
     liblua5.3-0 \
     libnuma1 \
     libpam0g \
@@ -160,6 +161,7 @@ RUN chmod +x /entrypoint.sh && \
     wget \
     make \
     man-db \    
+    zlib1g-dev \
     linux-headers-amd64 \
     pkg-config \
     autoconf \
