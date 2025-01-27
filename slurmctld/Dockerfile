@@ -72,7 +72,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/bin/pip3 /usr/local/bin/pip3 && \
     mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
-    mkdir -p /var/log/slurm/ /etc/slurm 
+    mkdir -p /var/log/slurm/ /etc/slurm && /
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
     chmod 700 /var/lib/munge /var/run/munge && \
     chmod 755 /run/munge
