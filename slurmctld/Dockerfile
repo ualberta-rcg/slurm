@@ -57,7 +57,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librrd-dev \
     libhdf5-dev \
     libmariadb-dev \
-    libmysqlclient-dev \
     libjson-c-dev \
     libhwloc-dev \
     libnuma-dev \
