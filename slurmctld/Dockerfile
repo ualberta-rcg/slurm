@@ -72,53 +72,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/bin/pip3 /usr/local/bin/pip3 && \
     mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
+    mkdir -p /var/log/slurm/ /etc/slurm 
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
     chmod 700 /var/lib/munge /var/run/munge && \
     chmod 755 /run/munge
- 
-#RUN apt-get update && apt-get install -y --no-install-recommends \
-#    build-essential \
-#    cmake \
-#    curl \
-#    git \
-#    ca-certificates \
-#    libhwloc-dev \
-#    liblua5.3-dev \
-#    libnuma-dev \
-#    libpam0g-dev \
-#    libpmix-dev \
-#    libreadline-dev \
-#    rrdtool \
-#    libyaml-dev \
-#    libjson-c-dev \
-#    libhttp-parser-dev \
-#    libev-dev \
-#    libev4 \
-#    man-db \
-#    wget \
-#    gcc \
-#    make \
-#    gettext \
-#    linux-headers-amd64 \
-#    pkg-config \
-#    autoconf \
-#    automake \
-#    libssl-dev \
-#    libtool   \
-#    libhdf5-dev \
-#    libmariadb-dev \
-#    libjwt-dev \
-#    libreadline-dev \
-#    libhttp-parser-dev \
-#    libjson-c-dev \
-#    libyaml-dev \
-#    libgtk2.0-dev \
-#    libcurl4-openssl-dev \
-#    libbpf-dev \
-#    libdbus-1-dev \
-#    libibumad-dev \
-#    libfreeipmi17 \
-#    libibmad-dev
   
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
