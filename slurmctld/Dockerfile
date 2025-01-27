@@ -114,7 +114,7 @@ RUN chmod +x /entrypoint.sh && \
     curl \
     wget \
     make \
-    man-db \    
+    man-db \
     zlib1g-dev \
     linux-headers-amd64 \
     pkg-config \
@@ -123,13 +123,25 @@ RUN chmod +x /entrypoint.sh && \
     libssl-dev \
     libev-dev \
     libevent-dev \
-    libtool && \
+    libtool \
+    libyaml-dev \
+    libpam0g-dev \
+    liblua5.3-dev \
+    libmunge-dev \
+    libhdf5-dev \
+    libmariadb-dev \
+    librrd-dev \
+    libjson-c-dev \
+    libhwloc-dev \
+    libnuma-dev \
+    libcurl4-openssl-dev \
+    libjwt-dev && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
     /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
     /usr/share/locale /usr/share/info && \
-    mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/warewulf
+    mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts
 
 # Expose required ports
 EXPOSE 6817
