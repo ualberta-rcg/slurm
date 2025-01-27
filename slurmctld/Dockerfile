@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreeipmi17 \
     libibumad3 \
     libibmad5 \
+    libev-dev \
+    libevent-dev \
     wget \
     gettext \
     linux-headers-amd64 \
@@ -169,6 +171,8 @@ RUN chmod +x /entrypoint.sh && \
     autoconf \
     automake \
     libssl-dev \
+    libev-dev \
+    libevent-dev \
     libtool && \
     apt-get autoremove -y && \
     apt-get clean && \
