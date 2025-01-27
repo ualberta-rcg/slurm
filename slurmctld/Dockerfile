@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmunge-dev \
     libmunge2 \
     libpmix-dev \
-    pmix \
+    libpmix-bin \
     libopenmpi-dev \
     rrdtool \
     librrd-dev \
