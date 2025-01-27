@@ -68,6 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpam0g-dev \
     libjwt-dev \
     lua5.3 \
+    mailutils \
     liblua5.3-dev && \
     ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/bin/pip3 /usr/local/bin/pip3 && \
