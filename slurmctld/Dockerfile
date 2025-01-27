@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
     libhwloc15 \
+    libtool \
     zlib1g-dev \
     liblua5.3-0 \
     libnuma1 \
