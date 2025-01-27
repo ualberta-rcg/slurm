@@ -3,12 +3,7 @@ FROM debian:bullseye-slim
 
 # Set environment variables
 ENV SLURM_VERSION=24-05-5-1
-ENV PYTHON_VERSION=3.12.8
-ENV MUNGE_VERSION=0.5.14
-ENV PMIX_VERSION=5.0.6
 ENV PREFIX=/opt/software/slurm
-ENV MUNGE_PREFIX=/opt/software/munge
-ENV PMIX_PREFIX=/opt/software/pmix
 ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:/opt/software/slurm/sbin:${PATH:-}
 ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
 
@@ -47,9 +42,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     gcc \
-    make
-
-    
+    make \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    munge \
+    libmunge-dev \
+    libmunge2 \
+    libpmix-dev \
+    pmix \
+    libopenmpi-dev \
+    rrdtool \
+    librrd-dev \
+    libhdf5-dev \
+    libmariadb-dev \
+    libmysqlclient-dev \
+    libjson-c-dev \
+    libhwloc-dev \
+    libnuma-dev \
+    libssl-dev \
+    libyaml-dev \
+    libcurl4-openssl-dev \
+    zlib1g-dev \
+    gettext \
+    lua5.3 \
+    liblua5.3-dev && \
+    ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/local/bin/pip3 && \
+    mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
+    chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
+    chmod 700 /var/lib/munge /var/run/munge && \
+    chmod 755 /run/munge
+ 
 #RUN apt-get update && apt-get install -y --no-install-recommends \
 #    build-essential \
 #    cmake \
@@ -99,56 +124,24 @@ RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
     groupadd -r munge && useradd -r -g munge -s /bin/false munge && \
     groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
-# Install Python from source
-RUN cd /usr/src && \
-    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
-    tar -xvf Python-${PYTHON_VERSION}.tgz && \
-    cd Python-${PYTHON_VERSION} && \
-    ./configure --enable-optimizations && \
-    make -j$(nproc) && make altinstall && \
-    ln -sf /usr/local/bin/python${PYTHON_VERSION%.*} /usr/local/bin/python3 && \
-    ln -sf /usr/local/bin/pip${PYTHON_VERSION%.*} /usr/local/bin/pip3  && \
-    ln -sf /usr/local/bin/python${PYTHON_VERSION%.*} /usr/bin/python3
-
-# Build and install MUNGE
+# Configure and build Slurm with the additional features enabled
 RUN mkdir -p /usr/src && cd /usr/src && \
-    curl -LO https://github.com/dun/munge/archive/munge-${MUNGE_VERSION}.tar.gz && \
-    tar -xzf munge-${MUNGE_VERSION}.tar.gz && \
-    cd munge-munge-${MUNGE_VERSION} && \
-    ./bootstrap && \
-    CPPFLAGS="-I/usr/local/ssl/include" ./configure \
-        --prefix=$MUNGE_PREFIX \
-        --sysconfdir=/etc \
-        --localstatedir=/var && \
-    make -j$(nproc) && make install && \
-    mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
-    chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \ 
-    cp /opt/software/munge/bin/* /usr/local/bin && \
-    chmod 700 /var/lib/munge /var/run/munge && \
-    chmod 755 /run/munge
-
-# Build and install PMIx
-RUN mkdir -p /usr/src && cd /usr/src && \
-    curl -LO https://github.com/openpmix/openpmix/releases/download/v${PMIX_VERSION}/pmix-${PMIX_VERSION}.tar.gz && \
-    tar -xzf pmix-${PMIX_VERSION}.tar.gz && cd pmix-${PMIX_VERSION} && \
-    ./configure --prefix=$PMIX_PREFIX && make -j$(nproc) && make install
-
-# Download and build Slurm
-RUN mkdir -p /usr/src /etc/slurm /var/run/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && \
-    chown -R slurm:slurm /etc/slurm /var/run/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && \
-    cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && cd slurm-slurm-${SLURM_VERSION} && \
     ./configure --prefix=$PREFIX \
                 --sysconfdir=/etc/slurm \
-                --with-munge=$MUNGE_PREFIX \
-                --with-pmix=$PMIX_PREFIX \
+                --with-munge=/etc/munge \
+                --with-pmix=/usr \
+                --with-hdf5 \
+                --with-mysql \
                 --enable-debug \
                 --enable-pam \
                 --enable-restd \
-                --enable-lua && \
+                --enable-lua \
+                --enable-rrdtool \
+                --enable-mpi && \
     make -j$(nproc) && make install && \
-    cd /usr/src/slurm-slurm-${SLURM_VERSION}/contribs && make && make install && \
+    cd contribs && make && make install && \
     touch /var/log/slurm/slurm-dbd.log && \
     touch /var/log/slurm/slurmctld.log
 
