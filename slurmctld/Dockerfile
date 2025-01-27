@@ -19,43 +19,75 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     ca-certificates \
-    libhwloc-dev \
-    liblua5.3-dev \
-    libnuma-dev \
-    libpam0g-dev \
-    libpmix-dev \
-    libreadline-dev \
-    rrdtool \
-    libyaml-dev \
-    libjson-c-dev \
-    libhttp-parser-dev \
-    libev-dev \
+    libhwloc15 \
+    liblua5.3-0 \
+    libnuma1 \
+    libpam0g \
+    librrd8 \
+    libyaml-0-2 \
+    libjson-c5 \
+    libhttp-parser2.9 \
     libev4 \
-    man-db \
+    libssl1.1 \
+    libcurl4 \
+    libbpf0 \
+    libdbus-1-3 \
+    libfreeipmi17 \
+    libibumad3 \
+    libibmad5 \
     wget \
-    gcc \
-    make \
     gettext \
     linux-headers-amd64 \
     pkg-config \
     autoconf \
     automake \
-    libssl-dev \
-    libtool   \
-    libhdf5-dev \
-    libmariadb-dev \
-    libjwt-dev \
-    libreadline-dev \
-    libhttp-parser-dev \
-    libjson-c-dev \
-    libyaml-dev \
-    libgtk2.0-dev \
-    libcurl4-openssl-dev \
-    libbpf-dev \
-    libdbus-1-dev \
-    libibumad-dev \
-    libfreeipmi17 \
-    libibmad-dev
+    gcc \
+    make
+
+    
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    build-essential \
+#    cmake \
+#    curl \
+#    git \
+#    ca-certificates \
+#    libhwloc-dev \
+#    liblua5.3-dev \
+#    libnuma-dev \
+#    libpam0g-dev \
+#    libpmix-dev \
+#    libreadline-dev \
+#    rrdtool \
+#    libyaml-dev \
+#    libjson-c-dev \
+#    libhttp-parser-dev \
+#    libev-dev \
+#    libev4 \
+#    man-db \
+#    wget \
+#    gcc \
+#    make \
+#    gettext \
+#    linux-headers-amd64 \
+#    pkg-config \
+#    autoconf \
+#    automake \
+#    libssl-dev \
+#    libtool   \
+#    libhdf5-dev \
+#    libmariadb-dev \
+#    libjwt-dev \
+#    libreadline-dev \
+#    libhttp-parser-dev \
+#    libjson-c-dev \
+#    libyaml-dev \
+#    libgtk2.0-dev \
+#    libcurl4-openssl-dev \
+#    libbpf-dev \
+#    libdbus-1-dev \
+#    libibumad-dev \
+#    libfreeipmi17 \
+#    libibmad-dev
   
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
@@ -97,7 +129,9 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     ./configure --prefix=$PMIX_PREFIX && make -j$(nproc) && make install
 
 # Download and build Slurm
-RUN mkdir -p /usr/src /etc/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && cd /usr/src && \
+RUN mkdir -p /usr/src /etc/slurm /var/run/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && \
+    chown -R slurm:slurm /etc/slurm /var/run/slurm /var/spool/slurm /var/log/slurm /var/spool/slurmctld && \
+    cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && cd slurm-slurm-${SLURM_VERSION} && \
     ./configure --prefix=$PREFIX \
@@ -117,8 +151,6 @@ COPY entrypoint.sh /entrypoint.sh
 
 # Clean Up
 RUN chmod +x /entrypoint.sh && \
-    rm -rf /usr/src/* /tmp/* /var/tmp/* && \
-    rm -rf /usr/share/doc /usr/share/man /usr/share/locale /usr/share/info && \
     apt-get purge -y \
     build-essential \
     cmake \
@@ -135,7 +167,9 @@ RUN chmod +x /entrypoint.sh && \
     libtool && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* && \
+    rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
+    /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
+    /usr/share/locale /usr/share/info && \
     mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/warewulf
 
 # Expose required ports
