@@ -130,8 +130,8 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && cd slurm-slurm-${SLURM_VERSION} && \
     ./configure --prefix=$PREFIX \
                 --sysconfdir=/etc/slurm \
-                --with-munge=/etc/munge \
-                --with-pmix=/usr \
+                --with-munge \
+                --with-pmix \
                 --with-hdf5 \
                 --with-mysql \
                 --enable-debug \
