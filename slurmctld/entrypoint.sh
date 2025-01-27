@@ -7,6 +7,7 @@ fi
 
 # Set proper permissions for slurm.conf
 mkdir -p /var/spool/slurmctld /var/log/slurm/ /var/run/slurm
+touch /var/spool/slurmctld/priority_last_decay_ran
 chown -R slurm:slurm /etc/slurm /var/spool/slurmctld /var/run/slurm /var/log/slurm /opt/software/slurm/sbin
 chmod 644 /etc/slurm/*.conf
 
