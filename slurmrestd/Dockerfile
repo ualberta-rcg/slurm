@@ -122,8 +122,8 @@ RUN chmod +x /entrypoint.sh && \
     sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf
 
 # Expose required ports
-EXPOSE 6817
+EXPOSE 6820
 
 # Entry point
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-CMD ["-D", "-R", "-vvv", "-i", "-s"]
+CMD ["-f", "/etc/slurm/slurm.conf", "-a", "jwt", "-vvv"]
