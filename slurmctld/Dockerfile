@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chmod 755 /run/munge
   
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
-RUN groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
+RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
+    groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
 SHELL ["/bin/bash", "-c"]
 
@@ -112,7 +113,8 @@ RUN chmod +x /entrypoint.sh && \
     rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
     /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
     /usr/share/locale /usr/share/info && \
-    mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts
+    mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts && \
+    sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf
 
 # Expose required ports
 EXPOSE 6817

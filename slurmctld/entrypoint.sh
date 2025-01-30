@@ -96,4 +96,4 @@ monitor_config_files() {
 (monitor_config_files) &
 
 # Run slurmctld as the slurm user
-exec su -s /bin/bash slurm -c "/opt/software/slurm/sbin/slurmctld $*"
+exec su -s /bin/bash slurm -c "/usr/sbin/slurmctld $*"
