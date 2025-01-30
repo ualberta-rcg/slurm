@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gettext \
     pkg-config \
+    fakeroot \
+    devscripts \
+    equivs \
     munge \
     libmunge-dev \
     libmunge2 && \
