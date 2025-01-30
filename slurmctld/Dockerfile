@@ -19,8 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     munge \
     libmunge-dev \
-    libmunge2 \
-    mailutils \ && \
+    libmunge2 && \
     mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
     chmod 700 /var/lib/munge /var/run/munge && \
