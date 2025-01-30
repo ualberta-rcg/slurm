@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chmod 755 /run/munge
   
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
-RUN groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
+RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
+    groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
 SHELL ["/bin/bash", "-c"]
 
