@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopenmpi-dev \
     libopenmpi3 \
     openmpi-bin \
+    mailutils \
     munge \
     libmunge-dev \
     libmunge2 && \
