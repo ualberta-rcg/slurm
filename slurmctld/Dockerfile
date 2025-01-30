@@ -20,6 +20,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fakeroot \
     devscripts \
     equivs \
+    libpmix-dev \
+    libpmix2 \
+    libopenmpi-dev \
+    libopenmpi3 \
+    openmpi-bin \
     munge \
     libmunge-dev \
     libmunge2 && \
@@ -38,7 +43,7 @@ RUN mkdir -p /usr/src && cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && \
     cd slurm-slurm-${SLURM_VERSION} && \
-    mk-build-deps -ir --tool='apt-get -qq -y -o Debug::pkgProblemResolver=yes --no-install-recommends' debian/control && \
+    mk-build-deps -ir --tool='apt-get -qq -y -o Debug::pkgProblemResolver=yes' debian/control && \
     debuild -b -uc -us >/dev/null && \
     cd .. && \
     \
