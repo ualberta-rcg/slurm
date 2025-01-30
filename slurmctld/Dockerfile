@@ -31,6 +31,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
 RUN groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
+SHELL ["/bin/bash", "-c"]
+
 RUN mkdir -p /usr/src && cd /usr/src && \
     curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
     tar -xzf slurm-${SLURM_VERSION}.tar.gz && \
