@@ -1,6 +1,15 @@
 #!/bin/bash
+# Enable JWT authentication for Slurm REST API
 export SLURM_JWT=daemon
+
+# Set debug level (0-9 or "debug")
 export SLURMRESTD_DEBUG=debug
+
+# Set authentication type explicitly to JWT (ensure AuthAltTypes=auth/jwt is enabled in slurm.conf)
+export SLURMRESTD_AUTH_TYPES=rest_auth/jwt
+
+# Listen on TCP port 6820 and a UNIX socket for security
+export SLURMRESTD_LISTEN="0.0.0.0:6820"
 
 # Redirect logs to stdout and stderr for Kubernetes
 if [ -z "${LOG_FILE}" ] || [ "${LOG_FILE}" = "/var/log/slurm/slurmrestd.log" ]; then
