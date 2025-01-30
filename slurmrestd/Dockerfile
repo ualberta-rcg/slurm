@@ -3,7 +3,6 @@ FROM debian:bullseye-slim
 
 # Set environment variables
 ENV SLURM_VERSION=24-05-5-1
-ENV PREFIX=/opt/software/slurm
 ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:/opt/software/slurm/sbin:${PATH:-}
 ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
 
