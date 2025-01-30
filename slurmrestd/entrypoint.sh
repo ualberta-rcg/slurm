@@ -19,7 +19,6 @@ fi
 # Set proper permissions for slurm directories
 mkdir -p /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
 touch /var/log/slurm/slurmrestd.log
-chown -R slurm:slurm /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
 chmod 644 /etc/slurm/*.conf
 
 # Setup Munge
@@ -34,4 +33,4 @@ su -s /bin/bash -c "/usr/sbin/munged --foreground --log-file=/var/log/munge/mung
 sleep 2
 
 # Run slurmctld as the slurm user
-exec su -s /bin/bash slurm -c "/usr/sbin/slurmrestd $*"
+exec "/usr/sbin/slurmrestd $*"
