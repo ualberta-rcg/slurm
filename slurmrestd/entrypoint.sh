@@ -33,4 +33,4 @@ su -s /bin/bash -c "/usr/sbin/munged --foreground --log-file=/var/log/munge/mung
 sleep 2
 
 # Run slurmctld as the slurm user
-exec "/usr/sbin/slurmrestd $*"
+exec slurmrestd "$*"
