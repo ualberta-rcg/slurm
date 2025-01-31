@@ -11,8 +11,6 @@ JWT_KEY_PATH="/var/spool/slurmctld/jwt_hs256.key"
 if [ ! -f "$JWT_KEY_PATH" ]; then
     echo "Creating JWT key for Slurm..."
     openssl rand -hex 32 > "$JWT_KEY_PATH"
-    chown slurm:slurm "$JWT_KEY_PATH"
-    chmod 600 "$JWT_KEY_PATH"
 fi
 
 # Set proper permissions for slurm.conf
@@ -20,7 +18,7 @@ mkdir -p /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/s
 touch /var/log/slurm/slurm-dbd.log /var/log/slurm/slurmctld.log /var/spool/slurmctld/priority_last_decay_ran
 chown -R slurm:slurm /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
 chmod 644 /etc/slurm/*.conf
-chmod 600 "$JWT_KEY_PATH"
+chmod 660 "$JWT_KEY_PATH"
 
 # Setup Munge
 cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
