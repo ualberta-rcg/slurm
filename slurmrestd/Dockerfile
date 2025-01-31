@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
     groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser && \
-    useradd -r -g slurm -s /bin/false slurmrest
+    groupadd -r slurmrest && useradd -r -g slurmrest -s /bin/false slurmrest
     
 SHELL ["/bin/bash", "-c"]
 
