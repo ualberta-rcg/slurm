@@ -91,7 +91,7 @@ monitor_config_files() {
                         fi
                     else
                         echo "Reloading SLURM configuration due to change in $file..."
-                        su -s /bin/bash slurm -c "/opt/software/slurm/bin/scontrol reconfigure"
+                        su -s /bin/bash slurm -c "/usr/bin/scontrol reconfigure"
                     fi
 
                     FILE_CHECKSUMS["$file"]="$NEW_CHECKSUM"
