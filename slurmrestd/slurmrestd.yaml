@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: slurm
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: slurmrestd
+  namespace: slurm
+spec:
+  selector:
+    matchLabels:
+      app: slurmrestd
+  template:
+    metadata:
+      labels:
+        app: slurmrestd
+    spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "slurmrestd"
+      - ip: "192.168.1.24"
+        hostnames:
+        - "slurmrestd"
+      containers:
+      - name: slurmrestd
+        image: rkhoja/slurm:slurmrestd
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6820
+        volumeMounts:
+        - name: munge-key
+          mountPath: /etc/munge/.secret/
+        - name: slurm-config
+          mountPath: /etc/slurm
+      volumes:
+      - name: munge-key
+        secret:
+          secretName: munge-key
+          items:
+          - key: munge-key
+            path: munge.keyfile
+      - name: slurm-config
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/slurm
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmrestd-service
+  namespace: slurm
+  labels:
+    app: slurmrestd-service
+spec:
+  selector:
+    app: slurmrestd
+  ports:
+  - name: slurmrestd
+    port: 6820
+    protocol: TCP
+    targetPort: 6820
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.24
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
