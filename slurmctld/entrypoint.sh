@@ -17,6 +17,7 @@ fi
 mkdir -p /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
 touch /var/log/slurm/slurm-dbd.log /var/log/slurm/slurmctld.log /var/spool/slurmctld/priority_last_decay_ran
 chown -R slurm:slurm /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
+chmod 755 /var/spool/slurmctld
 chmod 644 /etc/slurm/*.conf
 chmod 660 "$JWT_KEY_PATH"
 
@@ -90,7 +91,7 @@ monitor_config_files() {
                         fi
                     else
                         echo "Reloading SLURM configuration due to change in $file..."
-                        su -s /bin/bash slurm -c "/opt/software/slurm/bin/scontrol reconfigure"
+                        su -s /bin/bash slurm -c "/usr/bin/scontrol reconfigure"
                     fi
 
                     FILE_CHECKSUMS["$file"]="$NEW_CHECKSUM"
