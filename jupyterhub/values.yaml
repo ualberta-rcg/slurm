@@ -1,0 +1,139 @@
+# values.yaml
+proxy:
+  secretToken: "9c1a5d2e5d8f1b3c4e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b"
+  service:
+    type: ClusterIP
+  https:
+    enabled: true
+    type: letsencrypt
+    letsencrypt:
+      contactEmail: khoja1@ualberta.ca
+
+hub:
+
+  image:
+    name: rkhoja/slurm:jupyterhub
+    tag: latest  # or specific version tag
+    pullPolicy: Always  # or IfNotPresent
+    
+  extraConfig:
+    spawner: |
+      import batchspawner
+      from batchspawner import SlurmSpawner
+      from string import Template
+
+      class CustomFormSpawner(SlurmSpawner):
+          def _options_form_default(self):
+              with open('/etc/jupyterhub/form_template.html', 'r') as f:
+                  return f.read()
+
+          def options_from_form(self, formdata):
+              options = {}
+              options['cluster'] = formdata.get('req_cluster', ['eureka'])[0]
+              options['qos'] = formdata.get('req_qos', ['normal'])[0]
+              options['gpus'] = int(formdata.get('req_gpus', ['0'])[0])
+              options['runtime'] = formdata.get('req_runtime', ['02:00:00'])[0]
+              options['nodes'] = int(formdata.get('req_nodes', ['1'])[0])
+              options['ntasks'] = int(formdata.get('req_ntasks', ['1'])[0])
+              return options
+
+          async def start(self):
+              self.req_cluster = self.user_options.get('cluster', 'eureka')
+              self.req_qos = self.user_options.get('qos', 'normal')
+              self.req_gpus = self.user_options.get('gpus', 0)
+              self.req_runtime = self.user_options.get('runtime', '02:00:00')
+              self.req_nodes = self.user_options.get('nodes', 1)
+              self.req_ntasks = self.user_options.get('ntasks', 1)
+
+              with open('/etc/jupyterhub/batch_template.sh', 'r') as f:
+                  template = Template(f.read())
+                  self.batch_script = template.substitute(
+                      username=self.user.name,
+                      cluster=self.req_cluster,
+                      qos=self.req_qos,
+                      nodes=self.req_nodes,
+                      ntasks=self.req_ntasks,
+                      runtime=self.req_runtime,
+                      port=self.port,
+                      gpus=self.req_gpus
+                  )
+
+              return await super().start()
+
+      c.JupyterHub.spawner_class = CustomFormSpawner
+      
+  config:
+    JupyterHub:
+      admin_access: true
+      log_level: DEBUG
+      cleanup_servers: false
+    Authenticator:
+      admin_users:
+        - khoja1
+        - kali2
+        - wwuser
+    Spawner:
+      default_url: '/lab'
+      http_timeout: 300
+      start_timeout: 300
+      notebook_dir: '/'
+    ConfigurableHTTPProxy:
+      command: ["--no-x-forward"]
+
+  extraVolumeMounts:
+    - name: nfs-slurm-config
+      mountPath: /etc/slurm
+    - name: nfs-munge-key
+      mountPath: /mnt/nfs-munge  
+    - name: munge-socket
+      mountPath: /var/run/munge      
+
+  extraVolumes:
+    - name: nfs-slurm-config
+      nfs:
+        server: 192.168.1.1
+        path: /disks/slurm/etc/slurm
+    - name: nfs-munge-key
+      nfs:
+        server: 192.168.1.1
+        path: /disks/slurm/etc/munge  
+    - name: munge-socket
+      emptyDir: {}
+      
+  extraContainers:
+    - name: munge-daemon
+      image: ubuntu:20.04
+      command: 
+        - "sh"
+        - "-c"
+        - |
+          apt-get update && apt-get install -y munge
+          
+          # Create munge directories with correct permissions
+          mkdir -p /var/run/munge
+          mkdir -p /etc/munge
+          chmod 755 /var/run/munge
+          chmod 755 /etc/munge
+          
+          # Copy and set permissions for munge key
+          cp /mnt/nfs-munge/munge.key /etc/munge/munge.key
+          chmod 400 /etc/munge/munge.key
+          chown munge:munge /etc/munge/munge.key
+          chown munge:munge /var/run/munge
+          chown munge:munge /etc/munge
+          
+          # Start munge daemon
+          munged -F
+      volumeMounts:
+        - name: nfs-munge-key
+          mountPath: /mnt/nfs-munge
+        - name: munge-socket
+          mountPath: /var/run/munge      
+      
+singleuser:
+  storage:
+    type: "dynamic"
+    dynamic:
+      storageClass: "nfs-client"
+cull:
+  enabled: true
