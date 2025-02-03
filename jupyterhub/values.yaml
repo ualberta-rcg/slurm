@@ -92,9 +92,5 @@ singleuser:
     type: "dynamic"
     dynamic:
       storageClass: "nfs-client"
-  image:
-    name: jupyter/base-notebook
-    tag: latest
-  defaultUrl: "/lab"
 cull:
   enabled: true
