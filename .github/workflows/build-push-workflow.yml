@@ -2,9 +2,11 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches-ignore:
-      - main
-
+    branches:
+      - slrumctld
+      - slurmdbd
+      - slurmrestd
+      
 jobs:
   build-scan-remediate-push:
     name: Build and Push Docker Images for Each Branch
