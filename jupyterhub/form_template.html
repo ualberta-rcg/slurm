@@ -1,0 +1,45 @@
+<div class="form-group">
+    <label for="req_cluster">Select a cluster</label>
+    <select name="req_cluster" required class="form-control">
+        <option value="polaris">Polaris</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="req_qos">Select a QoS</label>
+    <select name="req_qos" required class="form-control">
+        <option value="jupyterhub">Polaris</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="req_runtime">Specify runtime (HH:MM:SS format, 12hr max)</label>
+    <input name="req_runtime"
+           type="text"
+           class="form-control"
+           required
+           pattern="[01]{1}\d{1}:[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}"
+           value="05:00:00">
+</div>
+
+<div class="form-group">
+    <label for="req_nodes">Specify node count</label>
+    <input name="req_nodes"
+           type="number"
+           class="form-control"
+           required
+           min="1"
+           max="8"
+           value="1">
+</div>
+
+<div class="form-group">
+    <label for="req_ntasks">Specify tasks per node</label>
+    <input name="req_ntasks"
+           type="number"
+           class="form-control"
+           required
+           min="1"
+           max="20"
+           value="1">
+</div>
