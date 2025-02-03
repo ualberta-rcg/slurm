@@ -1,4 +1,4 @@
-name: Create a Slurm Compatible JupyterHub
+name: Create Slurm Extras such as JupyterHub + Munge
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
       - munge
 
 jobs:
-  build-scan-remediate-push:
-    name: Build a Customized Docker Image of a Slurm Node, Apply CIS L2 Server Benchmarks, Push to Docker Repository
+  build-dockerfile-push:
+    name: Build a Customized Docker Image of a Slurm Extra
     runs-on: ubuntu-latest
 
     env:
