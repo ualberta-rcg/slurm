@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - jupyterhub
+      - munge
 
 jobs:
   build-scan-remediate-push:
