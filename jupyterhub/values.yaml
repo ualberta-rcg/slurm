@@ -11,60 +11,15 @@ proxy:
 
 hub:
   extraConfig:
-
     spawner: |
       import batchspawner
       from batchspawner import SlurmSpawner
+      from string import Template
 
       class CustomFormSpawner(SlurmSpawner):
           def _options_form_default(self):
-              return """
-              <div class="form-group">
-                  <label for="req_cluster">Select a cluster</label>
-                  <select name="req_cluster" required class="form-control">
-                      <option value="polaris">Polaris</option>
-                  </select>
-              </div>
-
-              <div class="form-group">
-                  <label for="req_qos">Select a QoS</label>
-                  <select name="req_qos" required class="form-control">
-                      <option value="jupyterhub">Polaris</option>
-                  </select>
-              </div>
-
-              <div class="form-group">
-                  <label for="req_runtime">Specify runtime (HH:MM:SS format, 12hr max)</label>
-                  <input name="req_runtime"
-                         type="text"
-                         class="form-control"
-                         required
-                         pattern="[01]{1}\d{1}:[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}"
-                         value="05:00:00">
-              </div>
-
-              <div class="form-group">
-                  <label for="req_nodes">Specify node count</label>
-                  <input name="req_nodes"
-                         type="number"
-                         class="form-control"
-                         required
-                         min="1"
-                         max="8"
-                         value="1">
-              </div>
-
-              <div class="form-group">
-                  <label for="req_ntasks">Specify tasks per node</label>
-                  <input name="req_ntasks"
-                         type="number"
-                         class="form-control"
-                         required
-                         min="1"
-                         max="20"
-                         value="1">
-              </div>
-              """
+              with open('/etc/jupyterhub/form_template.html', 'r') as f:
+                  return f.read()
 
           def options_from_form(self, formdata):
               options = {}
@@ -82,26 +37,22 @@ hub:
               self.req_nodes = self.user_options.get('nodes', 1)
               self.req_ntasks = self.user_options.get('ntasks', 1)
 
-              self.batch_script = f"""#!/bin/bash
-              #SBATCH --job-name=jupyterhub
-              #SBATCH --output=/home/{self.user.name}/jupyterhub_%j.log
-              #SBATCH --error=/home/{self.user.name}/jupyterhub_%j.err
-              #SBATCH --partition={self.req_cluster}
-              #SBATCH --qos={self.req_qos}
-              #SBATCH --nodes={self.req_nodes}
-              #SBATCH --ntasks-per-node={self.req_ntasks}
-              #SBATCH --time={self.req_runtime}
-
-              module load anaconda
-              source activate jupyter
-              jupyter lab --no-browser --port={self.port} --ip=0.0.0.0
-              """
+              with open('/etc/jupyterhub/batch_template.sh', 'r') as f:
+                  template = Template(f.read())
+                  self.batch_script = template.substitute(
+                      username=self.user.name,
+                      cluster=self.req_cluster,
+                      qos=self.req_qos,
+                      nodes=self.req_nodes,
+                      ntasks=self.req_ntasks,
+                      runtime=self.req_runtime,
+                      port=self.port
+                  )
 
               return await super().start()
 
       c.JupyterHub.spawner_class = CustomFormSpawner
-
-
+      
   config:
     JupyterHub:
       admin_access: true
