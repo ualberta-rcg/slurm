@@ -8,6 +8,4 @@
 #SBATCH --ntasks-per-node={ntasks}
 #SBATCH --time={runtime}
 
-module load anaconda
-source activate jupyter
 jupyter lab --no-browser --port={port} --ip=0.0.0.0
