@@ -24,4 +24,4 @@ RUN mkdir -p /var/log/munge && \
 USER munge
 
 # Command to start munge daemon
-CMD ["munged", "--foreground"]
+CMD ["munged", "--foreground", "--force", "--verbose"]
