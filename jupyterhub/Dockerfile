@@ -6,16 +6,15 @@ USER root
 RUN apt-get update && apt-get install -y \
     slurm-client \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /etc/jupyterhub/ || true 
+
+COPY batch_template.sh /etc/jupyterhub/
+COPY form_template.html /etc/jupyterhub/
 
 # Install BatchSpawner
 RUN pip install batchspawner \
     && pip cache purge
 
-# Copy custom configuration files
-COPY jupyterhub_config.py /srv/jupyterhub/
-
-# The jupyterhub user (not jovyan) is the default user in jupyterhub/jupyterhub image
+# The jupyterhub user is the default user in jupyterhub/jupyterhub image
 USER jupyterhub
-
-# The default working directory in jupyterhub/jupyterhub is already /srv/jupyterhub
