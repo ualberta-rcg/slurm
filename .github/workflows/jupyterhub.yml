@@ -26,5 +26,5 @@ jobs:
       - name: 🚀 Push Docker Image
         run: |
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
-          docker tag $DOCKER_REPO:$GITHUB_REF_NAME-remediated $DOCKER_REPO:$GITHUB_REF_NAME
+          docker tag $DOCKER_REPO:$GITHUB_REF_NAME $DOCKER_REPO:$GITHUB_REF_NAME
           docker push $DOCKER_REPO:$GITHUB_REF_NAME
