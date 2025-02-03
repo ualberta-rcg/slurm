@@ -7,6 +7,6 @@
 #SBATCH --nodes=${nodes}
 #SBATCH --ntasks-per-node=${ntasks}
 #SBATCH --time=${runtime}
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:${gpus}
 
 jupyter lab --no-browser --port=${port} --ip=0.0.0.0
