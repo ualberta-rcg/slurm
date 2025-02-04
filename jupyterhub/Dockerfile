@@ -5,6 +5,12 @@ USER root
 # Ensure UID and GID 999 for slurm before package installation
 RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
 
+# Ensure UID and GID 972 for Munge
+RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge
+
+# Ensure jovyan can see the munge and slurm users
+RUN usermod -aG munge,slurm jovyan
+
 # Install minimal Slurm tools needed for job submission
 RUN apt-get update && apt-get install -y \
     slurm-client \
