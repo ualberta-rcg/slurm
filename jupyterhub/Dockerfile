@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mailutils \
     munge \
     libmunge-dev \
-    libmunge2
+    libmunge2 \
     iputils-ping \
     iproute2 \
     net-tools \
