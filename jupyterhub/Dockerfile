@@ -5,6 +5,19 @@ USER root
 # Install minimal Slurm tools needed for job submission
 RUN apt-get update && apt-get install -y \
     slurm-client \
+    iputils-ping \
+    iproute2 \
+    net-tools \
+    dnsutils \
+    traceroute \
+    curl \
+    wget \
+    vim \
+    nano \
+    less \
+    htop \
+    lsof \
+    tcpdump \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/jupyterhub/ || true 
