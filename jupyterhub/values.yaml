@@ -10,12 +10,15 @@ proxy:
       contactEmail: khoja1@ualberta.ca
 
 hub:
+  service:
+    type: LoadBalancer
+    loadBalancerIP: "192.168.1.15"
 
   image:
-    name: rkhoja/slurm:jupyterhub
-    tag: latest  # or specific version tag
-    pullPolicy: Always  # or IfNotPresent
-    
+    name: rkhoja/slurm
+    tag: jupyterhub
+    pullPolicy: Always
+
   extraConfig:
     spawner: |
       import batchspawner
@@ -61,7 +64,7 @@ hub:
               return await super().start()
 
       c.JupyterHub.spawner_class = CustomFormSpawner
-      
+
   config:
     JupyterHub:
       admin_access: true
@@ -84,9 +87,9 @@ hub:
     - name: nfs-slurm-config
       mountPath: /etc/slurm
     - name: nfs-munge-key
-      mountPath: /mnt/nfs-munge  
+      mountPath: /mnt/nfs-munge
     - name: munge-socket
-      mountPath: /var/run/munge      
+      mountPath: /var/run/munge
 
   extraVolumes:
     - name: nfs-slurm-config
@@ -96,40 +99,32 @@ hub:
     - name: nfs-munge-key
       nfs:
         server: 192.168.1.1
-        path: /disks/slurm/etc/munge  
+        path: /disks/slurm/etc/munge
     - name: munge-socket
       emptyDir: {}
-      
+
   extraContainers:
     - name: munge-daemon
-      image: ubuntu:20.04
-      command: 
+      image: rkhoja/slurm:munge
+      command:
         - "sh"
         - "-c"
         - |
-          apt-get update && apt-get install -y munge
-          
-          # Create munge directories with correct permissions
-          mkdir -p /var/run/munge
-          mkdir -p /etc/munge
-          chmod 755 /var/run/munge
-          chmod 755 /etc/munge
-          
-          # Copy and set permissions for munge key
+          # Copy munge key from NFS mount to local directory
           cp /mnt/nfs-munge/munge.key /etc/munge/munge.key
-          chmod 400 /etc/munge/munge.key
-          chown munge:munge /etc/munge/munge.key
-          chown munge:munge /var/run/munge
-          chown munge:munge /etc/munge
-          
-          # Start munge daemon
-          munged -F
+          chmod 440 /etc/munge/munge.key
+
+          # Start munge daemon in foreground
+          exec munged --foreground --force --verbose
+      securityContext:
+        runAsUser: 972
+        runAsGroup: 972
       volumeMounts:
         - name: nfs-munge-key
           mountPath: /mnt/nfs-munge
         - name: munge-socket
-          mountPath: /var/run/munge      
-      
+          mountPath: /var/run/munge
+
 singleuser:
   storage:
     type: "dynamic"
