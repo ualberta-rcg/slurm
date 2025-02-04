@@ -2,6 +2,8 @@ FROM jupyterhub/k8s-hub:4.1.0
 
 USER root
 
+ENV SLURM_VERSION=24-05-5-1
+
 # Ensure UID and GID 999 for slurm before package installation
 RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
 
