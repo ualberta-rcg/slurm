@@ -6,8 +6,7 @@ USER root
 RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
 
 # Ensure UID and GID 972 for Munge
-RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge \
-    && groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
+RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge 
 
 # Ensure jovyan can see the munge and slurm users
 RUN usermod -aG munge,slurm jovyan
