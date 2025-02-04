@@ -38,6 +38,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     iproute2 \
     net-tools \
+    dpkg-dev \
+    debhelper \
+    libreadline-dev \
+    libncurses-dev \
+    libssl-dev \
+    libpam0g-dev \
+    libglib2.0-dev \
+    libcurl4-openssl-dev \
+    libjson-c-dev \
+    libhwloc-dev \
+    liblua5.3-dev \    
     curl \
     wget \
     vim \
