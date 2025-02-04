@@ -21,8 +21,8 @@ RUN apt-get update && apt-get install -y \
     htop \
     lsof \
     tcpdump \
-    sudo && \
-    echo "jupyterhub ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    sudo \
+    && echo "jupyterhub ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/jupyterhub/ || true 
