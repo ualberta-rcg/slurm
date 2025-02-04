@@ -33,8 +33,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/jupyterhub/ || true \
     && chmod 755 /etc/munge \ 
-    && chmod a+r -R /etc/munge
-
+    && chmod a+r -R /etc/munge \
+    && chmod a+w -R /etc/munge
+    
 COPY batch_template.sh /etc/jupyterhub/
 COPY form_template.html /etc/jupyterhub/
 
