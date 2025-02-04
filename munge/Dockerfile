@@ -17,11 +17,11 @@ RUN pacman -Sy --noconfirm \
     && rm -rf /var/cache/pacman/pkg/*
 
 # Create Munge directories & set correct permissions
-RUN mkdir -p /etc/munge /var/run/munge /var/log/munge && \
-    chown -R munge:munge /etc/munge /var/run/munge /var/log/munge && \
-    chmod 750 /etc/munge && \  # Group users can list files but not modify
-    chmod 770 /var/run/munge && \
-    chmod 755 /var/log/munge
+RUN mkdir -p /etc/munge /var/run/munge /var/log/munge \
+    && chown -R munge:munge /etc/munge /var/run/munge /var/log/munge \
+    && chmod 750 /etc/munge \
+    && chmod 770 /var/run/munge \
+    && chmod 755 /var/log/munge
 
 # Create log directory
 RUN mkdir -p /var/log/munge && \
