@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopenmpi3 \
     openmpi-bin \
     mailutils \
+    sudo \
     munge \
     libmunge-dev \
     libmunge2 \  
