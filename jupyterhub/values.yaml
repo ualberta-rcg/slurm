@@ -51,7 +51,7 @@ hub:
               with open('/etc/jupyterhub/batch_template.sh', 'r') as f:
                   template = Template(f.read())
                   self.batch_script = template.substitute(
-                      username=self.user.name,
+                      username='root',
                       cluster=self.req_cluster,
                       qos=self.req_qos,
                       nodes=self.req_nodes,
