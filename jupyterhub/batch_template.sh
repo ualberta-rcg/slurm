@@ -9,4 +9,4 @@
 #SBATCH --time=${runtime}
 #SBATCH --gres=gpu:${gpus}
 
-jupyter lab --no-browser --port=${port} --ip=0.0.0.0
+jupyter lab --no-browser --port=${port} --ip=0.0.0.0 --allow-root
