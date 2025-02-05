@@ -81,6 +81,9 @@ RUN pip install batchspawner \
     && rm -rf /var/lib/apt/lists/* 
 
 # Allow 'joyvan' and users in 'docker' group to use sudo without password
-RUN echo "joyvan ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo "joyvan ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/joyvan \
+    && echo "%docker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/docker \
+    && chmod 0440 /etc/sudoers.d/joyvan /etc/sudoers.d/docker \
+    && echo "Defaults !requiretty" >> /etc/sudoers
 
 USER joyvan
