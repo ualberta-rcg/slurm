@@ -30,6 +30,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     munge \
     libmunge-dev \
     libmunge2 \  
+    sssd \
+    sssd-tools \
+    libnss-sss \
+    libpam-sss \
+    libsss-sudo \
     curl \
     wget \
     vim \
