@@ -15,17 +15,11 @@ RUN usermod -aG munge,slurm jovyan
 
 # Install minimal Slurm tools needed for job submission
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
     curl \
     git \
     ca-certificates \
     wget \
     gettext \
-    pkg-config \
-    fakeroot \
-    devscripts \
-    equivs \
     libpmix-dev \
     libpmix2 \
     libopenmpi-dev \
@@ -87,6 +81,9 @@ RUN pip install batchspawner \
     && rm -rf /var/lib/apt/lists/* 
 
 # Allow 'joyvan' and users in 'docker' group to use sudo without password
-RUN echo "joyvan ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo "joyvan ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/joyvan \
+    && echo "%docker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/docker \
+    && chmod 0440 /etc/sudoers.d/joyvan /etc/sudoers.d/docker \
+    && echo "Defaults !requiretty" >> /etc/sudoers
 
 USER joyvan
