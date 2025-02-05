@@ -56,8 +56,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     less \
     htop \
     lsof \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/jupyterhub/ || true \
     && chmod 755 /etc/munge \ 
     && chmod a+r -R /etc/munge \
@@ -111,7 +109,9 @@ COPY form_template.html /etc/jupyterhub/
 
 # Install BatchSpawner
 RUN pip install batchspawner \
-    && pip cache purge
+    && pip cache purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
 
 # The jupyterhub user is the default user in jupyterhub/jupyterhub image
 USER jupyterhub
