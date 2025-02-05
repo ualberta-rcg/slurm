@@ -57,7 +57,7 @@ hub:
                       nodes=self.req_nodes,
                       ntasks=self.req_ntasks,
                       runtime=self.req_runtime,
-                      port=self.port,
+                      port=8888,
                       gpus=self.req_gpus
                   )
 
