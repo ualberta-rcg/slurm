@@ -7,8 +7,14 @@ ENV PREFIX=/opt/software/slurm
 ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:/opt/software/slurm/sbin:${PATH:-}
 ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
 
+# Pre-configure LDAP packages to avoid interactive prompts
+RUN echo "nslcd nslcd/ldap-uris string ldap://localhost" | debconf-set-selections && \
+    echo "nslcd nslcd/ldap-base string dc=example,dc=com" | debconf-set-selections && \
+    echo "libnss-ldapd libnss-ldapd/nsswitch multiselect passwd, group, shadow" | debconf-set-selections && \
+    echo "libpam-ldapd libpam-ldapd/enable-debug boolean false" | debconf-set-selections
+
 # Install dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     curl \
