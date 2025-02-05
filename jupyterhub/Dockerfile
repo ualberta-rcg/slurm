@@ -14,7 +14,7 @@ RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge
 RUN usermod -aG munge,slurm jovyan
 
 # Install minimal Slurm tools needed for job submission
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     curl \
     git \
     ca-certificates \
@@ -35,6 +35,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnss-sss \
     libpam-sss \
     libsss-sudo \
+    ldap-utils \
+    libldap-common \
+    libnss-ldapd \
+    libpam-ldapd \
     curl \
     wget \
     vim \
