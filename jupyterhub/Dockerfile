@@ -15,17 +15,11 @@ RUN usermod -aG munge,slurm jovyan
 
 # Install minimal Slurm tools needed for job submission
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
     curl \
     git \
     ca-certificates \
     wget \
     gettext \
-    pkg-config \
-    fakeroot \
-    devscripts \
-    equivs \
     libpmix-dev \
     libpmix2 \
     libopenmpi-dev \
