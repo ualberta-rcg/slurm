@@ -85,5 +85,4 @@ RUN pip install batchspawner \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-# The jupyterhub user is the default user in jupyterhub/jupyterhub image
-USER jupyterhub
+USER joyvan
