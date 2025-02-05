@@ -27,10 +27,6 @@ jobs:
             exit 1
           fi
 
-      - name: 📂 Copy .deb Files to Branch Directory
-        run: |
-          cp -v slurm-debs/*.deb ./${GITHUB_REF_NAME}/
-
       - name: 🐳 Build Docker Image
         run: |
           cd ${GITHUB_REF_NAME}
