@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 SHELL ["/bin/bash", "-c"]
 
 # Copy all .deb files into the container
-COPY ../slurm-debs/*.deb /tmp/
+COPY *.deb /tmp/
 
 COPY batch_template.sh /etc/jupyterhub/
 COPY form_template.html /etc/jupyterhub/
