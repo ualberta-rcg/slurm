@@ -8,5 +8,6 @@
 #SBATCH --ntasks-per-node=${ntasks}
 #SBATCH --time=${runtime}
 #SBATCH --gres=gpu:${gpus}
+#SBATCH --chdir=/home/root
 
 jupyter lab --no-browser --port=${port} --ip=0.0.0.0 --allow-root
