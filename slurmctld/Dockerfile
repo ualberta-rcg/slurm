@@ -28,7 +28,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mailutils \
     munge \
     libmunge-dev \
-    libmunge2 && \
+    libmunge2 \
+    sssd \
+    sssd-tools \
+    libnss-sss \
+    libpam-sss \
+    libsss-sudo \
+    ldap-utils \
+    libldap-common \
+    libnss-ldapd \
+    libpam-ldapd && \
     mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
     chmod 700 /var/lib/munge /var/run/munge && \
@@ -116,9 +125,9 @@ RUN chmod +x /entrypoint.sh && \
     libjwt-dev && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
-    /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
-    /usr/share/locale /usr/share/info && \
+    # rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
+    # /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
+    # /usr/share/locale /usr/share/info && \
     mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts && \
     sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf
 
