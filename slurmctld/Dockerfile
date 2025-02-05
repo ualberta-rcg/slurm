@@ -28,7 +28,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mailutils \
     munge \
     libmunge-dev \
-    libmunge2 && \
+    libmunge2 \
+    sssd \
+    sssd-tools \
+    libnss-sss \
+    libpam-sss \
+    libsss-sudo \
+    ldap-utils \
+    libldap-common \
+    libnss-ldapd \
+    libpam-ldapd && \
     mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
     chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
     chmod 700 /var/lib/munge /var/run/munge && \
