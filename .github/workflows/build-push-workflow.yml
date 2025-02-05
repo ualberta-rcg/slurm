@@ -1,9 +1,9 @@
 name: Build and Push Docker Images
 
 on:
-  pull:
+  pull_request:
     branches:
-      - slrumctld
+      - slurmctld
       - slurmdbd
       - slurmrestd
       
