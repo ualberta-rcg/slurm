@@ -7,9 +7,14 @@ RUN echo "nslcd nslcd/ldap-uris string ldap://localhost" | debconf-set-selection
     echo "libnss-ldapd libnss-ldapd/nsswitch multiselect passwd, group, shadow" | debconf-set-selections && \
     echo "libpam-ldapd libpam-ldapd/enable-debug boolean false" | debconf-set-selections
 
-# Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
-RUN groupadd -g 999 -r slurm && useradd -r -g slurm -u 999 -s /bin/false slurm && \
-    groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
+# Ensure UID and GID 999 for slurm before package installation
+RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
+
+# Ensure UID and GID 972 for Munge
+RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge 
+
+# Ensure UID and GID 1000 for Munge
+RUN groupadd -g 1000 wwgroup && useradd -u 1000 -g 972 -m -s /bin/bash wwuser
 
 # Install dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -33,7 +38,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
 SHELL ["/bin/bash", "-c"]
 
 RUN EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
-    ALL_DEBS=($(find / -maxdepth 1 -type f -name "*.deb")) && \
+    ALL_DEBS=($(find /tmp -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
         skip=false; \
