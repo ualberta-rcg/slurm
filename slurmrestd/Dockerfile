@@ -72,8 +72,9 @@ RUN chmod +x /entrypoint.sh && \
     rm -rf /var/lib/apt/lists/* /tmp/* \
     /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
     /usr/share/locale /usr/share/info && \
-    mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts && \
-    sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf
+    mkdir -p /etc/hosts.d/ /run/munge && touch /etc/hosts.d/hosts && \
+    sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf && \
+    chown munge:munge -R /run/munge
 
 # Expose required ports
 EXPOSE 6820
