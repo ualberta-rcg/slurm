@@ -36,11 +36,12 @@ RUN apt-get update && apt-get install -y \
     libpam-ldapd
 
 # Copy all .deb files into the container
-COPY *_u2404.deb /tmp/
+COPY slurm-debs/ /tmp/
 
 SHELL ["/bin/bash", "-c"]
 
 RUN cd /tmp && \
+    rm *debian12.deb && \
     EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
     ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
