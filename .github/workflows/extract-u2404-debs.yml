@@ -25,7 +25,6 @@ jobs:
 
       - name: Rename .deb Files (Append _u2404 if missing)
         run: |
-          rm ./slurm-debs/*_u2404.deb
           cd tmp
           for file in *.deb; do
             if [[ "$file" != *u2404.deb ]]; then
