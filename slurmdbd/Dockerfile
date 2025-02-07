@@ -54,8 +54,7 @@ COPY entrypoint.sh /entrypoint.sh
 # Clean Up
 RUN chmod +x /entrypoint.sh && \
     apt-get purge -y \
-    man-db \    
-    libtool && \
+    man-db && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* /usr/src/* \
