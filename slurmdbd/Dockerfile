@@ -18,16 +18,7 @@ RUN apt-get update && apt-get install -y \
     libopenmpi3 \
     openmpi-bin \
     mailutils \
-    munge \
-    sssd \
-    sssd-tools \
-    libnss-sss \
-    libpam-sss \
-    libsss-sudo \
-    ldap-utils \
-    libldap-common \
-    libnss-ldapd \
-    libpam-ldapd 
+    munge 
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
