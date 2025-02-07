@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y \
     libnss-ldapd \
     libpam-ldapd
 
+RUN ls -lah
+
 # Copy all .deb files into the container
 COPY slurm-debs/ /tmp/
 
