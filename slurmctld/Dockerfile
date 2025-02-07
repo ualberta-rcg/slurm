@@ -16,8 +16,8 @@ RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge
 # Ensure UID and GID 1000 for Munge
 RUN groupadd -g 1000 wwgroup && useradd -u 1000 -g 972 -m -s /bin/bash wwuser
 
-# Install dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# Install Packages
+RUN apt-get update && apt-get install -y \
     libpmix-dev \
     libpmix2 \
     libopenmpi-dev \
@@ -72,7 +72,6 @@ RUN chmod +x /entrypoint.sh && \
     man-db && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm /*.deb && \
     rm -rf /var/lib/apt/lists/* /tmp/* \
     /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
     /usr/share/locale /usr/share/info && \
