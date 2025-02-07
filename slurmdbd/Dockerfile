@@ -27,8 +27,7 @@ RUN apt-get update && apt-get install -y \
     ldap-utils \
     libldap-common \
     libnss-ldapd \
-    libpam-ldapd \
-    && ls -l
+    libpam-ldapd 
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
