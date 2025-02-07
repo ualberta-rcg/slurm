@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -y \
 SHELL ["/bin/bash", "-c"]
 
 # Copy all .deb files into the container
-COPY *.deb /tmp/
+COPY *debian12.deb /tmp/
 
 COPY batch_template.sh /etc/jupyterhub/
 COPY form_template.html /etc/jupyterhub/
