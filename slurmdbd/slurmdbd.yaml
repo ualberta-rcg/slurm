@@ -21,31 +21,25 @@ spec:
       - name: slurmdbd
         image: rkhoja/slurm:slurmdbd
         imagePullPolicy: Always
-        env:
-        - name: STORAGE_HOST
-          value: paice-db-pxc-db-haproxy.percona-db-cluster.svc.cluster.local # Percona cluster service name
-        - name: STORAGE_PORT
-          value: "3306"
-        - name: STORAGE_USER
-          value: root
-        - name: STORAGE_PASS
-          valueFrom:
-            secretKeyRef:
-              name: paice-db-pxc-db-secrets
-              key: root
-        - name: STORAGE_LOC
-          value: "slurm_acct_db" # Or your desired database name
-        - name: AUTH_TYPE
-          value: "auth/munge"
         volumeMounts:
         - name: munge-key
           mountPath: /etc/munge/.secret/
+        - name: slurm-config
+          mountPath: /etc/slurm
+#        command: ["/bin/bash", "-c"]
+#        args:
+#          - |
+#            tail -f /dev/null
       volumes:
+      - name: slurm-config
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/slurm
       - name: munge-key
         secret:
-          secretName: slurm
+          secretName: munge-key
           items:
-          - key: munge
+          - key: munge-key
             path: munge.keyfile
       restartPolicy: Always
 ---
@@ -54,12 +48,25 @@ kind: Service
 metadata:
   name: slurmdbd-service
   namespace: slurm
+  labels:
+    app: slurmdbd-service
 spec:
+  allocateLoadBalancerNodePorts: true
   selector:
     app: slurmdbd
   ports:
-  - port: 6819 # The port used by slurmdbd
-    targetPort: 6819
+  - name: slurmdbd
+    port: 6819
     protocol: TCP
-  sessionAffinity: ClientIP # Enable sticky sessions
-  type: LoadBalancer # Or NodePort for bare-metal, depending on your setup
+    targetPort: 6819
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.20
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack

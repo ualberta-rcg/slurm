@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurmctld
+  namespace: slurm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slurmctld
+  template:
+    metadata:
+      labels:
+        app: slurmctld
+    spec:
+      hostname: slurmctld-1
+      containers:
+      - name: slurmctld
+        image: rkhoja/slurm:slurmctld  # Adjust image as needed
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6817
+        volumeMounts:
+        - name: munge-key
+          mountPath: /etc/munge/.secret/
+        - name: slurm-config
+          mountPath: /etc/slurm
+        - name: slurmctld-state
+          mountPath: /var/spool/slurmctld
+        - name: warewulf-hosts
+          mountPath: /etc/hosts.d
+#         command: ["/bin/bash", "-c"]
+#         args:
+#           - |
+#             tail -f /dev/null
+      volumes:
+      - name: munge-key
+        secret:
+          secretName: munge-key
+          items:
+          - key: munge-key
+            path: munge.keyfile
+      - name: slurm-config
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/slurm
+      - name: slurmctld-state
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/var/spool/slurmctld/
+      - name: warewulf-hosts
+        nfs:
+          server: 192.168.1.1
+          path: /disks/warewulf/etc/
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "slurmctld-1"
+      - ip: "192.168.1.22"
+        hostnames:
+        - "slurmctld-1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmctld-service
+  namespace: slurm
+  labels:
+    app: slurmctld-service
+spec:
+  selector:
+    app: slurmctld
+  ports:
+  - name: slurmctld
+    port: 6817
+    protocol: TCP
+    targetPort: 6817
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.22
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
