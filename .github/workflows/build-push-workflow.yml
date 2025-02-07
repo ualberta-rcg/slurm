@@ -27,10 +27,9 @@ jobs:
             exit 1
           fi        
 
-      - name: Copy Files to Build Location
+      - name: 📂 Copy .deb Files to Branch Directory
         run: |
-          cp slurm-deps/*u2404.deb ${BRANCH}/
-          docker build -t $DOCKER_REPO:${BRANCH} .
+          cp -v slurm-debs/*u2404.deb ./${BRANCH}/   
 
       - name: 🐳 Build Docker Image
         run: |
