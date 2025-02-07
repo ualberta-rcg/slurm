@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
     && ls -l
 
 # Copy all .deb files into the container
-COPY slurm-debs/ /tmp/
+COPY ../slurm-debs/. /tmp/
 
 SHELL ["/bin/bash", "-c"]
 
