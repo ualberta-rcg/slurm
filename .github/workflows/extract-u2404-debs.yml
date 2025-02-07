@@ -16,12 +16,12 @@ jobs:
 
       - name: Create Container and Extract .deb Files
         run: |
-          CONTAINER_ID=$(docker create rkhoja/slurm:jupyterhub)
+          CONTAINER_ID=$(docker create rkhoja/slurm:slurmctld)
           docker cp $CONTAINER_ID:/usr/src/ ./slurm-debs
           docker rm $CONTAINER_ID
           ls -lh ./slurm-debs
 
-      - name: Rename .deb Files (Append _debian12 if missing)
+      - name: Rename .deb Files (Append _u2404 if missing)
         run: |
           cd slurm-debs
           for file in *.deb; do
