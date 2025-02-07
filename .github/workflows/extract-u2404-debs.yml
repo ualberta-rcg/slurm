@@ -16,17 +16,18 @@ jobs:
 
       - name: Create Container and Extract .deb Files
         run: |
+          mkdir tmp
           CONTAINER_ID=$(docker create rkhoja/slurm:slurmctld)
-          docker cp $CONTAINER_ID:/usr/src/ ./slurm-debs
+          docker cp $CONTAINER_ID:/usr/src/ ./tmp
           docker rm $CONTAINER_ID
           ls -lh ./slurm-debs
 
       - name: Rename .deb Files (Append _u2404 if missing)
         run: |
-          cd slurm-debs
+          cd tmp
           for file in *.deb; do
             if [[ "$file" != *u2404.deb ]]; then
-              mv "$file" "${file%.deb}_u2404.deb"
+              mv "$file" "../slurm-debs/${file%.deb}_u2404.deb"
             fi
           done
           ls -lh
