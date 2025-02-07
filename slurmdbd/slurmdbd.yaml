@@ -26,10 +26,10 @@ spec:
           mountPath: /etc/munge/.secret/
         - name: slurm-config
           mountPath: /etc/slurm
-#        command: ["/bin/bash", "-c"]
-#        args:
-#          - |
-#            tail -f /dev/null
+            #        command: ["/bin/bash", "-c"]
+            #        args:
+            #          - |
+            #            tail -f /dev/null
       volumes:
       - name: slurm-config
         nfs:
