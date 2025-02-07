@@ -42,7 +42,6 @@ COPY *.deb /tmp/
 SHELL ["/bin/bash", "-c"]
 
 RUN cd /tmp && \
-    rm *debian12.deb && \
     EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
     ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
