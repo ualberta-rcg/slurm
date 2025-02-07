@@ -1,6 +1,12 @@
 # Base image
 FROM debian:bullseye-slim
 
+# Pre-configure LDAP packages to avoid interactive prompts
+RUN echo "nslcd nslcd/ldap-uris string ldap://localhost" | debconf-set-selections && \
+    echo "nslcd nslcd/ldap-base string dc=example,dc=com" | debconf-set-selections && \
+    echo "libnss-ldapd libnss-ldapd/nsswitch multiselect passwd, group, shadow" | debconf-set-selections && \
+    echo "libpam-ldapd libpam-ldapd/enable-debug boolean false" | debconf-set-selections
+
 # Ensure UID and GID 999 for slurm before package installation
 RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
 
