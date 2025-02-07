@@ -16,6 +16,7 @@ jobs:
 
       - name: Create Container and Extract .deb Files
         run: |
+          rm ./slurm-debs/*_u2404.deb
           mkdir tmp
           CONTAINER_ID=$(docker create rkhoja/slurm:slurmctld)
           docker cp $CONTAINER_ID:/usr/src/. ./tmp/
