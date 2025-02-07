@@ -1,0 +1,40 @@
+name: Extract Slurm DEBs from Docker Image
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  extract-debs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Pull Docker Image
+        run: docker pull rkhoja/slurm:slurmctld
+
+      - name: Create Container and Extract .deb Files
+        run: |
+          CONTAINER_ID=$(docker create rkhoja/slurm:jupyterhub)
+          docker cp $CONTAINER_ID:/usr/src/ ./slurm-debs
+          docker rm $CONTAINER_ID
+          ls -lh ./slurm-debs
+
+      - name: Rename .deb Files (Append _debian12 if missing)
+        run: |
+          cd slurm-debs
+          for file in *.deb; do
+            if [[ "$file" != *u2404.deb ]]; then
+              mv "$file" "${file%.deb}_u2404.deb"
+            fi
+          done
+          ls -lh
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add slurm-debs/*.deb
+          git commit -m "Added Slurm DEBs from Docker image"
+          git push
