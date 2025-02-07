@@ -1,4 +1,4 @@
-name: Extract u24.04 Slurm DEBs from Docker Image
+name: Extract Ubuntu 24.04 Slurm DEBs from Docker Image
 
 on:
   workflow_dispatch:  # Manual trigger
