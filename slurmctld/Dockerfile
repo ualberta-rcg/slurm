@@ -35,10 +35,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
     libnss-ldapd \
     libpam-ldapd
 
+# Copy all .deb files into the container
+COPY slurm-debs/*_u2404.deb /tmp/
+
 SHELL ["/bin/bash", "-c"]
 
-RUN EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
-    ALL_DEBS=($(find /tmp -maxdepth 1 -type f -name "*.deb")) && \
+RUN cd /tmp && \
+    EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
+    ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
         skip=false; \
@@ -58,7 +62,7 @@ RUN EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
         apt-get install -y "${INSTALL_LIST[@]}"; \
     else \
         echo "No .deb packages to install."; \
-    fi
+    fi 
 
 COPY entrypoint.sh /entrypoint.sh
 
