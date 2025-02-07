@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     libpam-ldapd
 
 # Copy all .deb files into the container
-COPY slurm-debs/*_u2404.deb /tmp/
+COPY *_u2404.deb /tmp/
 
 SHELL ["/bin/bash", "-c"]
 
