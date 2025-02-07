@@ -21,30 +21,20 @@ spec:
       - name: slurmdbd
         image: rkhoja/slurm:slurmdbd
         imagePullPolicy: Always
-        env:
-        - name: STORAGE_HOST
-          value: paice-db-pxc-db-haproxy.percona-db-cluster.svc.cluster.local # Percona cluster service name
-        - name: STORAGE_PORT
-          value: "3306"
-        - name: STORAGE_USER
-          value: root
-        - name: STORAGE_PASS
-          valueFrom:
-            secretKeyRef:
-              name: paice-db-pxc-db-secrets
-              key: root
-        - name: STORAGE_LOC
-          value: "slurm_acct_db" 
-        - name: AUTH_TYPE
-          value: "auth/munge"
         volumeMounts:
         - name: munge-key
           mountPath: /etc/munge/.secret/
-#        command: ["/bin/bash", "-c"]
-#        args:
-#          - |
-#            tail -f /dev/null
+        - name: slurm-config
+          mountPath: /etc/slurm
+            #        command: ["/bin/bash", "-c"]
+            #        args:
+            #          - |
+            #            tail -f /dev/null
       volumes:
+      - name: slurm-config
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/slurm
       - name: munge-key
         secret:
           secretName: munge-key

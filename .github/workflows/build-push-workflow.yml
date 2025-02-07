@@ -1,10 +1,12 @@
 name: Build and Push Docker Images
 
 on:
-  push:
-    branches-ignore:
-      - main
-
+  pull_request:
+    branches:
+      - slurmctld
+      - slurmdbd
+      - slurmrestd
+      
 jobs:
   build-scan-remediate-push:
     name: Build and Push Docker Images for Each Branch
@@ -12,7 +14,7 @@ jobs:
 
     env:
       DOCKER_REPO: ${{ vars.CONTAINER_IMAGE }}
-      GITHUB_REF_NAME: ${{ github.ref_name }}   
+      BRANCH: ${{ github.base_ref }}   
 
     steps:
       - name: 🛠️ Checkout Repository
@@ -20,18 +22,22 @@ jobs:
 
       - name: 🔍 Verify Directory for Branch
         run: |
-          if [ ! -d "./${GITHUB_REF_NAME}" ]; then
-            echo "Directory ./${GITHUB_REF_NAME} does not exist for branch ${GITHUB_REF_NAME}."
+          if [ ! -d "./${BRANCH}" ]; then
+            echo "Directory ./${BRANCH} does not exist for branch ${BRANCH}."
             exit 1
-          fi
+          fi        
+
+      - name: 📂 Copy .deb Files to Branch Directory
+        run: |
+          cp -v slurm-debs/*u2404.deb ./${BRANCH}/   
 
       - name: 🐳 Build Docker Image
         run: |
-          cd ${GITHUB_REF_NAME}
-          docker build -t $DOCKER_REPO:${GITHUB_REF_NAME} .
+          cd ${BRANCH}
+          docker build -t $DOCKER_REPO:${BRANCH} .
 
       - name: 🚀 Push Docker Image
         run: |
-          cd ${GITHUB_REF_NAME}      
+          cd ${BRANCH}      
           echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
-          docker push $DOCKER_REPO:${GITHUB_REF_NAME}
+          docker push $DOCKER_REPO:${BRANCH}

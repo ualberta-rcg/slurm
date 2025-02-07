@@ -1,0 +1,56 @@
+<div class="form-group">
+    <label for="req_cluster">Select a partition</label>
+    <select name="req_cluster" required class="form-control">
+        <option value="debug">Debug</option>
+        <option value="eureka">Eureka</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="req_qos">Select a QoS</label>
+    <select name="req_qos" required class="form-control">
+        <option value="normal">Normal</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="req_gpus">Number of GPUs</label>
+    <select name="req_gpus" required class="form-control">
+        <option value="0">0 (CPU only)</option>
+        <option value="1">1 GPU</option>
+        <option value="2">2 GPUs</option>
+        <option value="4">4 GPUs</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="req_runtime">Specify runtime (HH:MM:SS format)</label>
+    <input name="req_runtime"
+           type="text"
+           class="form-control"
+           required
+           pattern="[0-9]{2}:[0-5][0-9]:[0-5][0-9]"
+           value="02:00:00">
+</div>
+
+<div class="form-group">
+    <label for="req_nodes">Specify node count</label>
+    <input name="req_nodes"
+           type="number"
+           class="form-control"
+           required
+           min="1"
+           max="10"
+           value="1">
+</div>
+
+<div class="form-group">
+    <label for="req_ntasks">Specify tasks per node</label>
+    <input name="req_ntasks"
+           type="number"
+           class="form-control"
+           required
+           min="1"
+           max="32"
+           value="1">
+</div>
