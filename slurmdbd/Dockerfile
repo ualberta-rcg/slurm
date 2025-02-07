@@ -26,7 +26,7 @@ COPY *.deb /tmp/
 SHELL ["/bin/bash", "-c"]
 
 RUN cd /tmp && \
-    EXCLUDE_KEYWORDS=("slurmctld" "slurmd" "slurmrestd") && \
+    EXCLUDE_KEYWORDS=("slurmctld" "slurmrestd") && \
     ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
