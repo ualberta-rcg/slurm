@@ -20,7 +20,7 @@ jobs:
           CONTAINER_ID=$(docker create rkhoja/slurm:slurmctld)
           docker cp $CONTAINER_ID:/usr/src/ ./tmp
           docker rm $CONTAINER_ID
-          ls -lh ./slurm-debs
+          ls -lh ./tmp
 
       - name: Rename .deb Files (Append _u2404 if missing)
         run: |
