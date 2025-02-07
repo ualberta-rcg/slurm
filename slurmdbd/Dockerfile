@@ -35,7 +35,7 @@ COPY *.deb /tmp/
 SHELL ["/bin/bash", "-c"]
 
 RUN cd /tmp && \
-    EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
+    EXCLUDE_KEYWORDS=("slurmctld" "slurmd" "slurmrestd") && \
     ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
@@ -58,7 +58,6 @@ RUN cd /tmp && \
         echo "No .deb packages to install."; \
     fi 
 
-COPY slurmdbd.conf.template /etc/slurm/slurmdbd.conf.template
 COPY entrypoint.sh /entrypoint.sh
 
 # Clean Up
