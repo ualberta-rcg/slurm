@@ -1,3 +1,6 @@
+# Base image
+FROM debian:bullseye-slim
+
 # Ensure UID and GID 999 for slurm before package installation
 RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
 
@@ -6,6 +9,9 @@ RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge
 
 # Ensure UID and GID 1000 for Munge
 RUN groupadd -g 1000 wwgroup && useradd -u 1000 -g 972 -m -s /bin/bash wwuser
+
+# Ensure slurmrest 
+RUN groupadd -r slurmrest && useradd -r -g slurmrest -s /bin/false slurmrest
 
 # Install Packages
 RUN apt-get update && apt-get install -y \
@@ -24,8 +30,7 @@ RUN apt-get update && apt-get install -y \
     ldap-utils \
     libldap-common \
     libnss-ldapd \
-    libpam-ldapd \
-    && ls -l
+    libpam-ldapd 
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
@@ -33,7 +38,7 @@ COPY *.deb /tmp/
 SHELL ["/bin/bash", "-c"]
 
 RUN cd /tmp && \
-    EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
+    EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmctld") && \
     ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
@@ -69,3 +74,11 @@ RUN chmod +x /entrypoint.sh && \
     /usr/share/locale /usr/share/info && \
     mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts && \
     sed -i -E 's/^(passwd:\s*)files/\1slurm files/; s/^(group:\s*)files/\1slurm files/; s/^(hosts:\s*files)/\1 slurm/' /etc/nsswitch.conf
+
+# Expose required ports
+EXPOSE 6820
+
+# Entry point
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+CMD ["-f", "/etc/slurm/slurm.conf", "-a", "jwt", "-vvv"]
+
