@@ -9,6 +9,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEBUG=1
 STATUS="Initializing"
 TIMESTAMP="$( date +%s )"
+RUNNER_DIR="/opt/actions-runner"
 
 # Function to collect user input with validation
 function get_input() {
@@ -45,8 +46,7 @@ function dump_vars {
     if ! ${SCRIPTDIR+false}; then echo "SCRIPTDIR = ${SCRIPTDIR}"; fi
     if ! ${DEBUG+false}; then echo "DEBUG = ${DEBUG}"; fi
     if ! ${TIMESTAMP+false}; then echo "TIMESTAMP = ${TIMESTAMP}"; fi
-    if ! ${GITHUB_REPO+false}; then echo "GITHUB_REPO = ${GITHUB_REPO}"; fi
-    if ! ${GITHUB_TOKEN+false}; then echo "GITHUB_TOKEN = ${GITHUB_TOKEN}"; fi
+    if ! ${RUNNER_DIR+false}; then echo "RUNNER_DIR = ${RUNNER_DIR}"; fi
 }
 
 # Failure Function
@@ -75,19 +75,53 @@ STATUS="Starting Installation"
 echo "$(date "+%FT%T") $STATUS" >> "${LOGFILE}"
 
 # Get GitHub Repo and Token
+STATUS="Get Runner Repo and Token"
+# Get GitHub Repo and Token
 GITHUB_REPO=$(get_input "Please Enter GitHub Repository URL" "https://github.com/YOUR_ORG/YOUR_REPO" | tr -d '\n\r')
 GITHUB_TOKEN=$(get_input "Please Enter GitHub Token" "YOUR_TOKEN" | tr -d '\n\r')
 
 # Create the GitHub Actions User
-sudo groupadd --system github-runner || true
-sudo useradd --system --gid github-runner --create-home --shell /usr/sbin/nologin --comment "GitHub Actions Runner" github-runner || true
+STATUS="Creating GitHub Runner User and Group"
+groupadd --system github-runner || true
+useradd --system --gid github-runner --create-home --shell /usr/sbin/nologin --comment "GitHub Actions Runner" github-runner || true
 
 # Ensure the runner directory exists
-sudo mkdir -p /opt/actions-runner
-sudo chown github-runner:github-runner /opt/actions-runner
+STATUS="Creating GitHub Runner Directories"
+mkdir -p "$RUNNER_DIR" || true
+chown github-runner:github-runner "$RUNNER_DIR" || true
+
+# Fetch the latest GitHub Actions runner version
+STATUS="Getting the Latest GitHub Runner"
+LATEST_VERSION=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | grep -oP '"tag_name": "\Kv[0-9.]+' | sed 's/v//')
+
+if [[ -z "$LATEST_VERSION" ]]; then
+    echo "Failed to fetch the latest GitHub Actions runner version."
+    exit 1
+fi
+
+echo "Latest GitHub Actions runner version: $LATEST_VERSION"
+STATUS="Latest GitHub Actions runner version: $LATEST_VERSION"
+
+# Define runner tarball URL and filename
+RUNNER_TARBALL="actions-runner-linux-x64-${LATEST_VERSION}.tar.gz"
+RUNNER_URL="https://github.com/actions/runner/releases/download/v${LATEST_VERSION}/${RUNNER_TARBALL}"
+
+# Navigate to the runner directory
+cd "$RUNNER_DIR"
+
+# Download the latest runner package
+STATUS="Downloading $RUNNER_URL..."
+curl -o "$RUNNER_TARBALL" -L "$RUNNER_URL"
+
+# Extract the installer
+STATUS="Extracting GitHub Runner $RUNNER_TARBALL"
+tar xzf "$RUNNER_TARBALL"
+
+# Clean up the tarball
+rm -f "$RUNNER_TARBALL"
 
 # Create the SystemD File
-sudo bash -c 'cat > /etc/systemd/system/github-runner.service <<EOF
+bash -c 'cat > /etc/systemd/system/github-runner.service <<EOF
 [Unit]
 Description=GitHub Actions Runner
 After=network.target
@@ -96,8 +130,8 @@ After=network.target
 Type=simple
 User=github-runner
 Group=github-runner
-WorkingDirectory=/opt/actions-runner
-ExecStart=/opt/actions-runner/run.sh
+WorkingDirectory=${RUNNER_DIR}
+ExecStart=${RUNNER_DIR}/run.sh
 KillMode=process
 KillSignal=SIGTERM
 TimeoutStopSec=5min
@@ -115,8 +149,10 @@ github-runner ALL=(ALL) NOPASSWD: /usr/bin/sinfo
 github-runner ALL=(ALL) NOPASSWD: /usr/bin/scontrol
 EOF'
 
-# Navigate to the runner directory
-cd /opt/actions-runner
+# Ensure the runner directory exists
+STATUS="Creating GitHub Runner Directories"
+cd "$RUNNER_DIR"
+chown github-runner:github-runner -R "$RUNNER_DIR" || true
 
 # Run the config script with variables
 STATUS="Configuring GitHub Runner"
