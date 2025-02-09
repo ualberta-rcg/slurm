@@ -64,6 +64,13 @@ function failure() {
 # Failure Function Trap
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
+echo "### How to Set Up a Self-Hosted GitHub Runner ###"
+echo "1. Go to your GitHub repository (or organization)."
+echo "2. Navigate to 'Settings' > 'Actions' > 'Runners'."
+echo "3. Click 'New Self-Hosted Runner'."
+echo "4. Select 'Linux' and copy the repository URL and token."
+echo "5. Enter the details below:"
+
 # Check the script is being run as root
 STATUS="Check - Script Run as Root user"
 if [[ $EUID -ne 0 ]]; then
