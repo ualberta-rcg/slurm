@@ -128,7 +128,7 @@ tar xzf "$RUNNER_TARBALL"
 rm -f "$RUNNER_TARBALL"
 
 # Create the SystemD File
-bash -c 'cat > /etc/systemd/system/github-runner.service <<EOF
+cat > /etc/systemd/system/github-runner.service <<EOF
 [Unit]
 Description=GitHub Actions Runner
 After=network.target
