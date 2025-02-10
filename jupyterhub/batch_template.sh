@@ -15,4 +15,4 @@
 set -euo pipefail
 echo "Starting JupyterHub on Slurm node"
 
-{{cmd}}
+srun {{cmd}} --debug --port={{port}}
