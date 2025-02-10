@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cert-renewer-sa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cert-manager-role
+  namespace: default
+rules:
+- apiGroups: ["cert-manager.io"]
+  resources: ["certificates", "certificates/status"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-manager-rolebinding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: cert-renewer-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: cert-manager-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cert-auto-renew
+  namespace: default
+spec:
+  schedule: "0 2 * * *"  # Runs daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cert-renewer-sa
+          restartPolicy: Never
+          containers:
+          - name: cert-renewer
+            image: bitnami/kubectl:latest
+            command: ["/bin/bash"]
+            args:
+              - -c
+              - |
+                #!/bin/bash
+                set -e
+
+                HOSTS_FILE="/mnt/hosts/hosts"
+                CERTS_DIR="/mnt/certs"
+                KUBE_NAMESPACE="default"
+
+                # Ensure certs directory exists
+                mkdir -p "$CERTS_DIR"
+
+                # Process each eureka host, getting second column and excluding commented lines
+                grep 'eureka-' "$HOSTS_FILE" | grep -v '#' | while read -r _ HOST _; do
+                  CERT_NAME="${HOST}-cluster-paice-ua-com"
+                  CERT_FILE="$CERTS_DIR/$HOST.crt"
+                  KEY_FILE="$CERTS_DIR/$HOST.key"
+                  SECRET_NAME="$CERT_NAME-tls"
+
+                  echo "Processing $HOST..."
+
+                  # Create/Update the certificate
+                  echo "Creating/Updating certificate for $HOST..."
+                  cat <<EOF | kubectl apply -f -
+                  apiVersion: cert-manager.io/v1
+                  kind: Certificate
+                  metadata:
+                    name: $CERT_NAME
+                    namespace: $KUBE_NAMESPACE
+                  spec:
+                    secretName: $SECRET_NAME
+                    issuerRef:
+                      name: letsencrypt-dns
+                      kind: ClusterIssuer
+                    commonName: $HOST.cluster.paice-ua.com
+                    dnsNames:
+                      - $HOST.cluster.paice-ua.com
+                EOF
+
+                  # Wait for cert-manager to process the certificate
+                  echo "Waiting for certificate to be ready..."
+                  kubectl wait --for=condition=Ready certificate/$CERT_NAME -n $KUBE_NAMESPACE --timeout=180s
+
+                  # Extract and save the certificate and key
+                  echo "Fetching certificate for $HOST..."
+                  kubectl get secret "$SECRET_NAME" -n "$KUBE_NAMESPACE" -o json | \
+                    jq -r '.data["tls.crt"]' | base64 -d > "$CERT_FILE"
+                  kubectl get secret "$SECRET_NAME" -n "$KUBE_NAMESPACE" -o json | \
+                    jq -r '.data["tls.key"]' | base64 -d > "$KEY_FILE"
+
+                  echo "Certificate for $HOST saved."
+                done
+            volumeMounts:
+            - name: nfs-hosts
+              mountPath: /mnt/hosts
+            - name: nfs-certs
+              mountPath: /mnt/certs
+          volumes:
+          - name: nfs-hosts
+            nfs:
+              server: 192.168.1.1
+              path: /disks/warewulf/etc/warewulf/
+          - name: nfs-certs
+            nfs:
+              server: 192.168.1.1
+              path: /disks/slurm/etc/certs

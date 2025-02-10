@@ -1,25 +1,23 @@
 # Base image
 FROM debian:bullseye-slim
 
-# Set environment variables
-ENV SLURM_VERSION=24-05-5-1
-ENV PREFIX=/opt/software/slurm
-ENV PATH=/usr/local/ssl/bin:$PREFIX/bin:/opt/software/slurm/sbin:${PATH:-}
-ENV LD_LIBRARY_PATH=/usr/local/ssl/lib:${LD_LIBRARY_PATH:-}
+# Pre-configure LDAP packages to avoid interactive prompts
+RUN echo "nslcd nslcd/ldap-uris string ldap://localhost" | debconf-set-selections && \
+    echo "nslcd nslcd/ldap-base string dc=example,dc=com" | debconf-set-selections && \
+    echo "libnss-ldapd libnss-ldapd/nsswitch multiselect passwd, group, shadow" | debconf-set-selections && \
+    echo "libpam-ldapd libpam-ldapd/enable-debug boolean false" | debconf-set-selections
 
-# Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    curl \
-    git \
-    ca-certificates \
-    wget \
-    gettext \
-    pkg-config \
-    fakeroot \
-    devscripts \
-    equivs \
+# Ensure UID and GID 999 for slurm before package installation
+RUN groupadd -g 999 slurm && useradd -u 999 -g 999 -m -s /bin/bash slurm
+
+# Ensure UID and GID 972 for Munge
+RUN groupadd -g 972 munge && useradd -u 972 -g 972 -m -s /sbin/nologin munge 
+
+# Ensure UID and GID 1000 for Munge
+RUN groupadd -g 1000 wwgroup && useradd -u 1000 -g 972 -m -s /bin/bash wwuser
+
+# Install Packages
+RUN apt-get update && apt-get install -y \
     libpmix-dev \
     libpmix2 \
     libopenmpi-dev \
@@ -27,34 +25,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openmpi-bin \
     mailutils \
     munge \
-    libmunge-dev \
-    libmunge2 && \
-    mkdir -p /var/run/munge /run/munge /var/lib/munge /var/log/munge /etc/munge && \
-    chown -R munge:munge /etc/munge /var/run/munge /var/lib/munge /var/log/munge /run/munge && \
-    chmod 700 /var/lib/munge /var/run/munge && \
-    chmod 755 /run/munge
-  
-# Add runtime configurations, users and groups for Munge, Slurm, & Warewulf
-RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
-    groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
+    sssd \
+    sssd-tools \
+    libnss-sss \
+    libpam-sss \
+    libsss-sudo \
+    ldap-utils \
+    libldap-common \
+    libnss-ldapd \
+    libpam-ldapd \
+    && ls -l
+
+# Copy all .deb files into the container
+COPY *.deb /tmp/
 
 SHELL ["/bin/bash", "-c"]
 
-RUN mkdir -p /usr/src && cd /usr/src && \
-    curl -LO https://github.com/SchedMD/slurm/archive/refs/tags/slurm-${SLURM_VERSION}.tar.gz && \
-    tar -xzf slurm-${SLURM_VERSION}.tar.gz && \
-    cd slurm-slurm-${SLURM_VERSION} && \
-    mk-build-deps -ir --tool='apt-get -qq -y -o Debug::pkgProblemResolver=yes' debian/control && \
-    debuild -b -uc -us >/dev/null && \
-    cd .. && \
-    \
-    # Define keywords to exclude (whitelist for exclusion)
+RUN cd /tmp && \
     EXCLUDE_KEYWORDS=("slurmdbd" "slurmd" "slurmrestd") && \
-    \
-    # Step 1: Generate the list of .deb files
-    ALL_DEBS=($(find /usr/src/ -maxdepth 1 -type f -name "*.deb")) && \
-    \
-    # Step 2: Filter out unwanted .deb files
+    ALL_DEBS=($(find ./ -maxdepth 1 -type f -name "*.deb")) && \
     INSTALL_LIST=() && \
     for deb in "${ALL_DEBS[@]}"; do \
         skip=false; \
@@ -68,12 +57,8 @@ RUN mkdir -p /usr/src && cd /usr/src && \
             INSTALL_LIST+=("$deb"); \
         fi; \
     done && \
-    \
-    # Step 3: Display the list of packages to be installed
     echo "The following .deb files will be installed:" && \
     printf '%s\n' "${INSTALL_LIST[@]}" && \
-    \
-    # Step 4: Install the selected .deb packages
     if [ "${#INSTALL_LIST[@]}" -gt 0 ]; then \
         apt-get install -y "${INSTALL_LIST[@]}"; \
     else \
@@ -85,38 +70,10 @@ COPY entrypoint.sh /entrypoint.sh
 # Clean Up
 RUN chmod +x /entrypoint.sh && \
     apt-get purge -y \
-    build-essential \
-    cmake \
-    git \
-    gcc \
-    curl \
-    wget \
-    make \
-    man-db \
-    zlib1g-dev \
-    linux-headers-amd64 \
-    pkg-config \
-    autoconf \
-    automake \
-    libssl-dev \
-    libev-dev \
-    libevent-dev \
-    libtool \
-    libyaml-dev \
-    libpam0g-dev \
-    liblua5.3-dev \
-    libmunge-dev \
-    libhdf5-dev \
-    libmariadb-dev \
-    librrd-dev \
-    libjson-c-dev \
-    libhwloc-dev \
-    libnuma-dev \
-    libcurl4-openssl-dev \
-    libjwt-dev && \
+    man-db && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /usr/src/* /var/lib/apt/lists/* /tmp/* \
+    rm -rf /var/lib/apt/lists/* /tmp/* \
     /var/tmp/* /var/log/* /usr/share/doc /usr/share/man \
     /usr/share/locale /usr/share/info && \
     mkdir -p /etc/hosts.d/ && touch /etc/hosts.d/hosts && \

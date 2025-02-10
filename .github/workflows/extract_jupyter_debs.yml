@@ -1,4 +1,4 @@
-name: Extract Slurm DEBs from Docker Image
+name: Extract Debian 12 Slurm DEBs from Docker Image
 
 on:
   workflow_dispatch:  # Manual trigger
@@ -23,10 +23,10 @@ jobs:
 
       - name: Rename .deb Files (Append _debian12 if missing)
         run: |
-          cd slurm-debs
+          cd tmp
           for file in *.deb; do
-            if [[ "$file" != *_debian12.deb ]]; then
-              mv "$file" "${file%.deb}_debian12.deb"
+            if [[ "$file" != *debian12.deb ]]; then
+              mv "$file" "../slurm-debs/${file%.deb}_debian12.deb"
             fi
           done
           ls -lh

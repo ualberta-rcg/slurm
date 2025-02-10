@@ -29,10 +29,12 @@ spec:
           mountPath: /var/spool/slurmctld
         - name: warewulf-hosts
           mountPath: /etc/hosts.d
-#         command: ["/bin/bash", "-c"]
-#         args:
-#           - |
-#             tail -f /dev/null
+        - name: sssd-config
+          mountPath: /etc/sssd
+            #        command: ["/bin/bash", "-c"]
+            #        args:
+            #          - |
+            #            tail -f /dev/null
       volumes:
       - name: munge-key
         secret:
@@ -51,7 +53,11 @@ spec:
       - name: warewulf-hosts
         nfs:
           server: 192.168.1.1
-          path: /disks/warewulf/etc/
+          path: /disks/warewulf/etc/warewulf/
+      - name: sssd-config
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/sssd
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
@@ -81,8 +87,10 @@ spec:
       timeoutSeconds: 10800
   type: LoadBalancer
   loadBalancerIP: 192.168.1.22
-  externalTrafficPolicy: Cluster
+  externalTrafficPolicy: Local
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
+  loadBalancerSourceRanges:  # <--- Add this to restrict access to internal IPs
+    - 192.168.1.0/24
