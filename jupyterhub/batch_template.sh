@@ -15,5 +15,4 @@
 set -euo pipefail
 echo "Starting JupyterHub on Slurm node"
 
-# *** KEY CHANGE: Use batchspawner-singleuser correctly ***
-${BATCHSPAWNER_SINGLEUSER_CMD} "${JUPYTERHUB_API_URL}" "${JUPYTERHUB_BASE_URL}" "${JUPYTERHUB_COOKIE_NAME}" "${JUPYTERHUB_USER}" "${JUPYTERHUB_API_TOKEN}" "${JUPYTERHUB_SERVER_NAME}"
+${cmd}
