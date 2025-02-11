@@ -51,7 +51,6 @@ hub:
       import subprocess
       os.system("sudo  munged --foreground --force --verbose & " )
 
-
     spawner: |
 
       import batchspawner
@@ -96,19 +95,33 @@ hub:
 
       c.JupyterHub.spawner_class = CustomFormSpawner
 
-
   config:
     JupyterHub:
-      admin_access: true
+      #admin_access: true
       log_level: DEBUG
       cleanup_servers: false
       hub_connect_ip: "192.168.1.15"
-    Authenticator:
+      authenticator_class: ldapauthenticator.LDAPAuthenticator
+    LDAPAuthenticator:
+      server_address:  [SECRET-REPLACE-THIS]
+      server_port: 636
+      tls_strategy: on_connect
+      bind_dn_template:
+        - uid={username},ou=People,dc=computecanada,dc=ca
+      escape_userdn: false
+      lookup_dn: false
+      lookup_dn_search_filter: ({login_attr}={login})
+      lookup_dn_search_user: ""
+      lookup_dn_search_password: ""
+      lookup_dn_user_dn_attribute: cn
+      user_attribute: uid
+      user_search_base: dc=computecanada,dc=ca
+      search_filter: (&({userattr}={username})(ccServiceAccess=aip-amii-tier1))
+      allow_all: true
       admin_users:
-        - khoja1
-        - kali2
-        - wwuser
         - rahimk
+        - alikarim
+      blocked_users: ["nobody", "root", "daemon", "bin", "sys", "adm", "uucp", "nuucp", "security", "cron", "lpd", "audit", "lp", "printq", "staff", "system", "usr", "smmsp", "ldap", "guest", "wheel", "milter", "sshd", "centos"]
     Spawner:
       default_url: '/lab'
       http_timeout: 300
@@ -116,7 +129,6 @@ hub:
       notebook_dir: '/'
     ConfigurableHTTPProxy:
       command: ["--no-x-forward"]
-      ip: "0.0.0.0"
   extraVolumeMounts:
     - name: nfs-slurm-config
       mountPath: /etc/slurm
@@ -126,7 +138,6 @@ hub:
       mountPath: /etc/sssd
     - name: munge-socket
       mountPath: /var/run/munge
-
   extraVolumes:
     - name: nfs-slurm-config
       nfs:
@@ -149,4 +160,4 @@ singleuser:
     dynamic:
       storageClass: "nfs-client"
 cull:
-  enabled: true
+  enabled: false
