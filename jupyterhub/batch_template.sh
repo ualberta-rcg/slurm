@@ -3,11 +3,11 @@
 #SBATCH --output={{homedir}}/jupyterhub_%j.log
 #SBATCH --error={{homedir}}/jupyterhub_%j.err
 #SBATCH --time={{runtime}}
-#SBATCH --nodes={{nodes}}
+#SBATCH --partition={{partition}}
 #SBATCH --ntasks={{ntasks}}
-#SBATCH --qos={{qos}}
-#SBATCH --partition={{cluster}}
 #SBATCH --gres=gpu:{{gpus}}
+#SBATCH --cpus-per-task={{cores}}
+#SBATCH --mem={{ram}}G
 #SBATCH --export=ALL
 #SBATCH --constraint=""
 #SBATCH --chdir={{homedir}}
