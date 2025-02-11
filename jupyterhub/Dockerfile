@@ -15,10 +15,7 @@ RUN usermod -aG munge,slurm jovyan
 
 # Install minimal Slurm tools needed for job submission
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
     ca-certificates \
-    wget \
     gettext \
     libpmix-dev \
     libpmix2 \
@@ -39,13 +36,7 @@ RUN apt-get update && apt-get install -y \
     libldap-common \
     libnss-ldapd \
     libpam-ldapd \
-    curl \
-    wget \
     vim \
-    nano \
-    less \
-    htop \
-    lsof \
     && mkdir -p /etc/jupyterhub/ || true \
     && chmod 755 /etc/munge \ 
     && chmod a+r -R /etc/munge \
@@ -85,6 +76,7 @@ RUN cd /tmp && \
 
 # Install BatchSpawner
 RUN pip install batchspawner \
+    jupyterhub-ldapauthenticator \
     && pip cache purge \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
