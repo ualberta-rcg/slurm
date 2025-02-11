@@ -79,7 +79,7 @@ RUN pip install batchspawner \
     jupyterhub-ldapauthenticator \
     && pip cache purge \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/* /tmp/*deb
 
 # Allow 'jovyan' and users in 'docker' group to use sudo without password
 RUN echo "jovyan ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/jovyan \
