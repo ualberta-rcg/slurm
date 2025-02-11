@@ -39,20 +39,16 @@ hub:
     00-sssd: |
       import os
       import subprocess
-      os.system("sudo /usr/sbin/sssd -i -d 9 & " )
+      os.system("sudo /usr/sbin/sssd -i -d 9 &")
 
-    01-custom-startup: |
-      import os
-      os.system("cp /mnt/nfs-munge/munge.key /etc/munge/munge.key")
-
-    02-munge: |
+    01-munge: |
       import os
       import random
       import subprocess
-      os.system("sudo  munged --foreground --force --verbose & " )
+      os.system("cp /mnt/nfs-munge/munge.key /etc/munge/munge.key")
+      os.system("sudo  munged --foreground --force --verbose &" )
 
     spawner: |
-
       import batchspawner
       from batchspawner import SlurmSpawner, set_user_setuid
       from string import Template
