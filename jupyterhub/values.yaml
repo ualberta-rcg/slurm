@@ -46,7 +46,7 @@ hub:
       import random
       import subprocess
       os.system("cp /mnt/nfs-munge/munge.key /etc/munge/munge.key")
-      os.system("sudo  munged --foreground --force --verbose &" )
+      os.system("sudo  munged --foreground --force --verbose &")
 
     spawner: |
       import batchspawner
@@ -60,7 +60,7 @@ hub:
 
           def options_from_form(self, formdata):
               options = {}
-              options['partition'] = formdata.get('req_partition', ['eureka'])[0]  # Partition is 'eureka'
+              options['partition'] = formdata.get('req_partition', ['eureka'])[0]  
               options['gpus'] = int(formdata.get('req_gpus', ['0'])[0])
               options['runtime'] = formdata.get('req_runtime', ['02:00:00'])[0]
               options['ntasks'] = int(formdata.get('req_ntasks', ['1'])[0])
@@ -74,7 +74,7 @@ hub:
 
           async def start(self):
               # Ensure required parameters are set via user_options
-              self.req_partition = self.user_options.get('partition', 'eureka')  # Ensure partition is set to eureka
+              self.req_partition = self.user_options.get('partition', 'eureka')  
               self.req_gpus = self.user_options.get('gpus', 0)
               self.req_runtime = self.user_options.get('runtime', '02:00:00')
               self.req_ntasks = self.user_options.get('ntasks', 1)
