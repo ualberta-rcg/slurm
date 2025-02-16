@@ -10,6 +10,22 @@ proxy:
       contactEmail: khoja1@ualberta.ca
 
 hub:
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - ipBlock:
+              cidr: 192.168.1.0/23
+        ports:
+          - port: 8081
+            protocol: TCP
+          - port: http
+            protocol: TCP
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: true
+    privileged: true
+
   service:
     type: LoadBalancer
     loadBalancerIP: "192.168.1.15"
@@ -20,9 +36,21 @@ hub:
     pullPolicy: Always
 
   extraConfig:
+    00-sssd: |
+      import os
+      import subprocess
+      os.system("sudo /usr/sbin/sssd -i -d 9 &")
+
+    01-munge: |
+      import os
+      import random
+      import subprocess
+      os.system("cp /mnt/nfs-munge/munge.key /etc/munge/munge.key")
+      os.system("sudo  munged --foreground --force --verbose &")
+
     spawner: |
       import batchspawner
-      from batchspawner import SlurmSpawner
+      from batchspawner import SlurmSpawner, set_user_setuid
       from string import Template
 
       class CustomFormSpawner(SlurmSpawner):
@@ -32,49 +60,64 @@ hub:
 
           def options_from_form(self, formdata):
               options = {}
-              options['cluster'] = formdata.get('req_cluster', ['eureka'])[0]
-              options['qos'] = formdata.get('req_qos', ['normal'])[0]
+              options['partition'] = formdata.get('req_partition', ['eureka'])[0]  
               options['gpus'] = int(formdata.get('req_gpus', ['0'])[0])
               options['runtime'] = formdata.get('req_runtime', ['02:00:00'])[0]
-              options['nodes'] = int(formdata.get('req_nodes', ['1'])[0])
               options['ntasks'] = int(formdata.get('req_ntasks', ['1'])[0])
+              options['cores'] = int(formdata.get('req_cores', ['1'])[0])
+              options['ram'] = int(formdata.get('req_ram', ['4'])[0])  # Default to 4GB
               return options
 
+          def make_preexec_fn(self, name):
+              """make preexec fn to change uid (if running as root) before job submission"""
+              return set_user_setuid(name)
+
           async def start(self):
-              self.req_cluster = self.user_options.get('cluster', 'eureka')
-              self.req_qos = self.user_options.get('qos', 'normal')
+              # Ensure required parameters are set via user_options
+              self.req_partition = self.user_options.get('partition', 'eureka')  
               self.req_gpus = self.user_options.get('gpus', 0)
               self.req_runtime = self.user_options.get('runtime', '02:00:00')
-              self.req_nodes = self.user_options.get('nodes', 1)
               self.req_ntasks = self.user_options.get('ntasks', 1)
+              self.req_cores = self.user_options.get('cores', 1)
+              self.req_ram = self.user_options.get('ram', 4)  # Default to 4GB
 
+              # Read the batch template – no substitution here yet!
               with open('/etc/jupyterhub/batch_template.sh', 'r') as f:
-                  template = Template(f.read())
-                  self.batch_script = template.substitute(
-                      username='root',
-                      cluster=self.req_cluster,
-                      qos=self.req_qos,
-                      nodes=self.req_nodes,
-                      ntasks=self.req_ntasks,
-                      runtime=self.req_runtime,
-                      port=8888,
-                      gpus=self.req_gpus
-                  )
+                  self.batch_script = f.read()
 
-              return await super().start()
+              # Important: Call super().start() *without* modifications to self.batch_script
+              ret = await super().start()  # Includes proper substitution
+              return ret
 
       c.JupyterHub.spawner_class = CustomFormSpawner
 
   config:
     JupyterHub:
-      admin_access: true
+      #admin_access: true
       log_level: DEBUG
       cleanup_servers: false
-    Authenticator:
+      hub_connect_ip: "192.168.1.15"
+      authenticator_class: ldapauthenticator.LDAPAuthenticator
+    LDAPAuthenticator:
+      server_address:  [SECRET-REPLACE-THIS]
+      server_port: 636
+      tls_strategy: on_connect
+      bind_dn_template:
+        - uid={username},ou=People,dc=computecanada,dc=ca
+      escape_userdn: false
+      lookup_dn: false
+      lookup_dn_search_filter: ({login_attr}={login})
+      lookup_dn_search_user: ""
+      lookup_dn_search_password: ""
+      lookup_dn_user_dn_attribute: cn
+      user_attribute: uid
+      user_search_base: dc=computecanada,dc=ca
+      search_filter: (&({userattr}={username})(ccServiceAccess=aip-amii-tier1))
+      allow_all: true
       admin_users:
-        - khoja1
-        - kali2
-        - wwuser
+        - rahimk
+        - alikarim
+      blocked_users: ["nobody", "root", "daemon", "bin", "sys", "adm", "uucp", "nuucp", "security", "cron", "lpd", "audit", "lp", "printq", "staff", "system", "usr", "smmsp", "ldap", "guest", "wheel", "milter", "sshd", "centos"]
     Spawner:
       default_url: '/lab'
       http_timeout: 300
@@ -82,15 +125,15 @@ hub:
       notebook_dir: '/'
     ConfigurableHTTPProxy:
       command: ["--no-x-forward"]
-
   extraVolumeMounts:
     - name: nfs-slurm-config
       mountPath: /etc/slurm
     - name: nfs-munge-key
       mountPath: /mnt/nfs-munge
+    - name: nfs-sssd
+      mountPath: /etc/sssd
     - name: munge-socket
       mountPath: /var/run/munge
-
   extraVolumes:
     - name: nfs-slurm-config
       nfs:
@@ -100,30 +143,12 @@ hub:
       nfs:
         server: 192.168.1.1
         path: /disks/slurm/etc/munge
+    - name: nfs-sssd
+      nfs:
+        server: 192.168.1.1
+        path: /disks/slurm/etc/sssd
     - name: munge-socket
       emptyDir: {}
-
-  extraContainers:
-    - name: munge-daemon
-      image: rkhoja/slurm:munge
-      command:
-        - "sh"
-        - "-c"
-        - |
-          # Copy munge key from NFS mount to local directory
-          cp /mnt/nfs-munge/munge.key /etc/munge/munge.key
-          chmod 440 /etc/munge/munge.key
-
-          # Start munge daemon in foreground
-          exec munged --foreground --force --verbose
-      securityContext:
-        runAsUser: 972
-        runAsGroup: 972
-      volumeMounts:
-        - name: nfs-munge-key
-          mountPath: /mnt/nfs-munge
-        - name: munge-socket
-          mountPath: /var/run/munge
 
 singleuser:
   storage:
@@ -131,4 +156,4 @@ singleuser:
     dynamic:
       storageClass: "nfs-client"
 cull:
-  enabled: true
+  enabled: false
