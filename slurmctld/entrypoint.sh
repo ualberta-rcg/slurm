@@ -23,7 +23,7 @@ chmod 660 "$JWT_KEY_PATH"
 chown -R munge:munge /run/munge
 
 # Setup Munge
-cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
+cp /etc/munge/.secret/munge.key /etc/munge/munge.key
 chown munge:munge -R /etc/munge
 chmod 400 /etc/munge/munge.key
 
