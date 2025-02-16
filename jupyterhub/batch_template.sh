@@ -8,7 +8,8 @@
 #SBATCH --gres=gpu:{{gpus}}
 #SBATCH --cpus-per-task={{cores}}
 #SBATCH --mem={{ram}}G
-#SBATCH --export=ALL
+#SBATCH --export={{keepvars}}
+#SBATCH --get-user-env=L
 #SBATCH --constraint=""
 #SBATCH --chdir={{homedir}}
 
@@ -24,7 +25,7 @@ export JUPYTER_RUNTIME_DIR=${SLURM_TMPDIR}/jupyter
 # Setup user pip install folder
 export PIP_PREFIX=${SLURM_TMPDIR}
 export PATH="${PIP_PREFIX}/bin":${PATH}
-export PYTHONPATH=${PYTHONPATH}:"/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/lib/usercustomize"
+export PYTHONPATH="/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/lib/usercustomize"
 
 # Make sure the environment-level directories does not
 # have priority over user-level directories for config and data.
