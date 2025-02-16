@@ -34,10 +34,15 @@ RUN apt-get update && apt-get install -y \
     libldap-common \
     libnss-ldapd \
     libpam-ldapd \
+    python3 \
+    python3-requests \
     && ls -l
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
+
+# Copy the Job Submit Script in. From Trailblazing Turtle. 
+COPY slurm_jobscripts.py /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
 
