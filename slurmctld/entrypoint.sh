@@ -51,7 +51,7 @@ while ! sacctmgr show cluster &>/dev/null; do
 done
 
 # Start Job Submit Script
-su -s /bin/bash -c "/usr/local/bin/slurm_jobscripts.py &" root
+su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py --verbose &" root
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/usr/sbin/slurmctld $*"
