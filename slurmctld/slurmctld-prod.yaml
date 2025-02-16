@@ -49,14 +49,12 @@ spec:
         ports:
         - containerPort: 6817
         volumeMounts:
-        - name: munge-key
+        - name: nfs-munge-key
           mountPath: /etc/munge/.secret/
         - name: slurm-config
           mountPath: /etc/slurm
         - name: slurmctld-state
           mountPath: /var/spool/slurmctld
-        - name: warewulf-hosts
-          mountPath: /etc/hosts.d
         - name: sssd-config
           mountPath: /etc/sssd
         # Uncomment if you need a debug hold:
@@ -65,12 +63,10 @@ spec:
         #   - |
         #     tail -f /dev/null
       volumes:
-      - name: munge-key
-        secret:
-          secretName: munge-key
-          items:
-          - key: munge-key
-            path: munge.keyfile
+      - name: nfs-munge-key
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/munge
       - name: slurm-config
         nfs:
           server: 192.168.1.1
@@ -79,10 +75,6 @@ spec:
         nfs:
           server: 192.168.1.1
           path: /disks/slurm/var/spool/slurmctld/
-      - name: warewulf-hosts
-        nfs:
-          server: 192.168.1.1
-          path: /disks/warewulf/etc/warewulf/
       - name: sssd-config
         nfs:
           server: 192.168.1.1
@@ -91,15 +83,6 @@ spec:
       - ip: "127.0.0.1"
         hostnames:
         - "slurmctld-1"
-      - ip: "192.168.1.10"
-        hostnames:
-        - "slurmctld-1"
-      - ip: "192.168.1.11"
-        hostnames:
-        - "slurmctld-2"
-      - ip: "192.168.1.12"
-        hostnames:
-        - "slurmctld-3"
 ---
 apiVersion: v1
 kind: Service
@@ -167,23 +150,19 @@ spec:
         ports:
         - containerPort: 6817
         volumeMounts:
-        - name: munge-key
+        - name: nfs-munge-key
           mountPath: /etc/munge/.secret/
         - name: slurm-config
           mountPath: /etc/slurm
         - name: slurmctld-state
           mountPath: /var/spool/slurmctld
-        - name: warewulf-hosts
-          mountPath: /etc/hosts.d
         - name: sssd-config
           mountPath: /etc/sssd
       volumes:
-      - name: munge-key
-        secret:
-          secretName: munge-key
-          items:
-          - key: munge-key
-            path: munge.keyfile
+      - name: nfs-munge-key
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/munge
       - name: slurm-config
         nfs:
           server: 192.168.1.1
@@ -192,10 +171,6 @@ spec:
         nfs:
           server: 192.168.1.1
           path: /disks/slurm/var/spool/slurmctld/
-      - name: warewulf-hosts
-        nfs:
-          server: 192.168.1.1
-          path: /disks/warewulf/etc/warewulf/
       - name: sssd-config
         nfs:
           server: 192.168.1.1
@@ -204,15 +179,6 @@ spec:
       - ip: "127.0.0.1"
         hostnames:
         - "slurmctld-2"
-      - ip: "192.168.1.10"
-        hostnames:
-        - "slurmctld-1"
-      - ip: "192.168.1.11"
-        hostnames:
-        - "slurmctld-2"
-      - ip: "192.168.1.12"
-        hostnames:
-        - "slurmctld-3"
 ---
 apiVersion: v1
 kind: Service
@@ -280,23 +246,19 @@ spec:
         ports:
         - containerPort: 6817
         volumeMounts:
-        - name: munge-key
+        - name: nfs-munge-key
           mountPath: /etc/munge/.secret/
         - name: slurm-config
           mountPath: /etc/slurm
         - name: slurmctld-state
           mountPath: /var/spool/slurmctld
-        - name: warewulf-hosts
-          mountPath: /etc/hosts.d
         - name: sssd-config
           mountPath: /etc/sssd
       volumes:
-      - name: munge-key
-        secret:
-          secretName: munge-key
-          items:
-          - key: munge-key
-            path: munge.keyfile
+      - name: nfs-munge-key
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/munge
       - name: slurm-config
         nfs:
           server: 192.168.1.1
@@ -305,25 +267,12 @@ spec:
         nfs:
           server: 192.168.1.1
           path: /disks/slurm/var/spool/slurmctld/
-      - name: warewulf-hosts
-        nfs:
-          server: 192.168.1.1
-          path: /disks/warewulf/etc/warewulf/
       - name: sssd-config
         nfs:
           server: 192.168.1.1
           path: /disks/slurm/etc/sssd
       hostAliases:
       - ip: "127.0.0.1"
-        hostnames:
-        - "slurmctld-3"
-      - ip: "192.168.1.10"
-        hostnames:
-        - "slurmctld-1"
-      - ip: "192.168.1.11"
-        hostnames:
-        - "slurmctld-2"
-      - ip: "192.168.1.12"
         hostnames:
         - "slurmctld-3"
 ---
