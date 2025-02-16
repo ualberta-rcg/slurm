@@ -16,7 +16,8 @@ fi
 # Set proper permissions for slurm.conf
 mkdir -p /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm /run/munge 
 touch /var/log/slurm/slurm-dbd.log /var/log/slurm/slurmctld.log /var/spool/slurmctld/priority_last_decay_ran
-chown -R slurm:slurm /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm
+chown -R slurm:slurm /var/spool/slurmctld /var/spool/slurmd /var/spool/slurmdbd /var/spool/slurmrestd /var/log/slurm/ /var/run/slurm /etc/slurm 
+chmod +x /usr/local/bin/slurm_jobscripts.py 
 chmod 755 /var/spool/slurmctld
 chmod 644 /etc/slurm/*.conf
 chmod 660 "$JWT_KEY_PATH"
@@ -48,6 +49,9 @@ while ! sacctmgr show cluster &>/dev/null; do
     fi
     echo "Waiting for slurmdbd to become available..."
 done
+
+# Start Job Submit Script
+su -s /bin/bash -c "/usr/local/bin/slurm_jobscripts.py &" root
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/usr/sbin/slurmctld $*"
