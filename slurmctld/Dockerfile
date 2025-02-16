@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
     libnss-ldapd \
     libpam-ldapd \
     python3 \
+    python3-requests \
     && ls -l
 
 # Copy all .deb files into the container
