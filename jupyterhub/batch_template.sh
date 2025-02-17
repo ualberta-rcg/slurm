@@ -13,7 +13,8 @@
 #SBATCH --constraint=""
 #SBATCH --chdir={{homedir}}
 
-set -euo pipefail
+#set -euo pipefail
+set -x
 echo "Starting JupyterHub on Slurm node"
 
 export SLURM_TMPDIR=/tmp/slurm.${SLURM_JOBID}
