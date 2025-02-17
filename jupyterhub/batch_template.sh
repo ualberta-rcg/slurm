@@ -17,7 +17,7 @@ set -euo pipefail
 echo "Starting JupyterHub on Slurm node"
 
 export SLURM_TMPDIR=/tmp/slurm.${SLURM_JOBID}
-mkdir -p "${SLURM_TMPDIR}"
+mkdir -p "${SLURM_TMPDIR}/jupyter"
 
 # Make sure Jupyter does not store its runtime in the home directory
 export JUPYTER_RUNTIME_DIR=${SLURM_TMPDIR}/jupyter
