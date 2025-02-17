@@ -25,13 +25,14 @@ export JUPYTER_RUNTIME_DIR=${SLURM_TMPDIR}/jupyter
 # Setup user pip install folder
 export PIP_PREFIX=${SLURM_TMPDIR}
 export PATH="${PIP_PREFIX}/bin":${PATH}
-export PYTHONPATH="/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/lib/usercustomize"
 
 # Make sure the environment-level directories does not
 # have priority over user-level directories for config and data.
 # Jupyter core is trying to be smart with virtual environments
 # and it is not doing the right thing in our case.
 export JUPYTER_PREFER_ENV_PATH=0
+
+source /cvmfs/soft.computecanada.ca/config/profile/bash.sh
 
 module load ipython-kernel
 
