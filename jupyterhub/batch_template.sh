@@ -36,4 +36,4 @@ source /cvmfs/soft.computecanada.ca/config/profile/bash.sh
 
 module load ipython-kernel
 
-srun {{cmd}} --debug
+{{cmd}}
