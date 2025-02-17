@@ -56,8 +56,7 @@ hub:
       class CustomFormSpawner(SlurmSpawner):
 
           batchspawner_singleuser_cmd = "/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/batchspawner-singleuser"
-          # /cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/jupyterhub-singleuser --KernelSpecManager.ensure_native_kernel=False --debug"
-
+          
           def _options_form_default(self):
               with open('/etc/jupyterhub/form_template.html', 'r') as f:
                   return f.read()
@@ -97,10 +96,8 @@ hub:
 
       c.JupyterHub.spawner_class = CustomFormSpawner
 
-
   config:
     JupyterHub:
-      #admin_access: true
       log_level: DEBUG
       cleanup_servers: false
       hub_connect_ip: "192.168.1.15"
