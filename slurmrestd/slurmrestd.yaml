@@ -35,12 +35,10 @@ spec:
 #          - |
 #            tail -f /dev/null          
       volumes:
-      - name: munge-key
-        secret:
-          secretName: munge-key
-          items:
-          - key: munge-key
-            path: munge.keyfile
+      - name: nfs-munge-key
+        nfs:
+          server: 192.168.1.1
+          path: /disks/slurm/etc/munge
       - name: slurm-config
         nfs:
           server: 192.168.1.1
