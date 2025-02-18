@@ -26,7 +26,7 @@ spec:
         ports:
         - containerPort: 6820
         volumeMounts:
-        - name: munge-key
+        - name: nfs-munge-key
           mountPath: /etc/munge/.secret/
         - name: slurm-config
           mountPath: /etc/slurm
