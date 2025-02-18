@@ -1,28 +1,40 @@
 #!/bin/bash
-#SBATCH --job-name=jupyterhub
-#SBATCH --output=/home/${username}/jupyterhub_%j.log
-#SBATCH --error=/home/${username}/jupyterhub_%j.err
-#SBATCH --partition=${cluster}
-#SBATCH --qos=${qos}
-#SBATCH --nodes=${nodes}
-#SBATCH --ntasks-per-node=${ntasks}
-#SBATCH --time=${runtime}
-#SBATCH --gres=gpu:${gpus}
-#SBATCH --chdir=/home/${username}
+#SBATCH --job-name=spawner-jupyterhub
+#SBATCH --output={{homedir}}/jupyterhub_slurmspawner_%j.log
+#SBATCH --error={{homedir}}/jupyterhub_slurmspawner_%j.err
+#SBATCH --time={{runtime}}
+#SBATCH --partition={{partition}}
+#SBATCH --ntasks={{ntasks}}
+#SBATCH --gres=gpu:{{gpus}}
+#SBATCH --cpus-per-task={{cores}}
+#SBATCH --mem={{ram}}G
+#SBATCH --export={{keepvars}}
+#SBATCH --get-user-env=L
+#SBATCH --constraint=""
+#SBATCH --chdir={{homedir}}
 
-# Load necessary modules
-module load python/3.8
+#set -euo pipefail
+set -x
+echo "Starting JupyterHub on Slurm node"
 
-# Get the hostname of the compute node
-HOSTNAME=$(hostname)
-PORT=8888
+export SLURM_TMPDIR=/tmp/slurm.${SLURM_JOBID}
+mkdir -p "${SLURM_TMPDIR}/jupyter"
 
-# Start JupyterLab on the compute node
-jupyter-lab --no-browser --port=$PORT --ip=0.0.0.0 --allow-root &
+# Make sure Jupyter does not store its runtime in the home directory
+export JUPYTER_RUNTIME_DIR=${SLURM_TMPDIR}/jupyter
 
-# Sleep to ensure JupyterLab starts
-sleep 5
+# Setup user pip install folder
+export PIP_PREFIX=${SLURM_TMPDIR}
+export PATH="${PIP_PREFIX}/bin":${PATH}
 
-# Write connection info to a known file location
-echo "JUPYTERHUB_REMOTE_HOST=$HOSTNAME" >> /tmp/jupyterhub-${SLURM_JOB_ID}.log
-echo "JUPYTERHUB_REMOTE_PORT=$PORT" >> /tmp/jupyterhub-${SLURM_JOB_ID}.log
+# Make sure the environment-level directories does not
+# have priority over user-level directories for config and data.
+# Jupyter core is trying to be smart with virtual environments
+# and it is not doing the right thing in our case.
+export JUPYTER_PREFER_ENV_PATH=0
+
+source /cvmfs/soft.computecanada.ca/config/profile/bash.sh
+
+module load ipython-kernel
+
+{{cmd}}
