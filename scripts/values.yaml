@@ -1,0 +1,5 @@
+pxc:
+  configuration: |
+    [mysqld]
+    innodb_buffer_pool_size=2G
+    innodb_lock_wait_timeout=50
