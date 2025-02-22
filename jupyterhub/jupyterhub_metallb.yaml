@@ -1,0 +1,15 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: jupyterhub-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 172.16.254.39-172.16.254.39
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: jupyterhub-advertisement
+  namespace: metallb-system
