@@ -19,6 +19,8 @@ else
   echo "Namespace $NAMESPACE already exists."
 fi
 
+kubectl apply -f percona-slurm-storage.yaml
+
 # Delete existing releases if they exist
 echo "Deleting existing Helm releases..."
 helm uninstall $PXC_RELEASE --namespace $NAMESPACE &>/dev/null
@@ -44,6 +46,11 @@ PXC_RELEASE="paice-db"
 # Values file
 VALUES_FILE="values.yaml"
 
+echo "Install Percona XtraDB Helm"
+helm repo add percona https://percona.github.io/percona-helm-charts/
+helm repo update
+
+
 echo "Installing the Percona XtraDB Cluster Operator..."
 helm install $OPERATOR_RELEASE percona/pxc-operator --namespace $NAMESPACE
 
@@ -59,7 +66,8 @@ helm install $PXC_RELEASE percona/pxc-db \
   --set haproxy.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key=db-node \
   --set haproxy.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator=In \
   --set haproxy.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0]=true \
-  --set pxc.configuration="[mysqld]\ninnodb_lock_wait_timeout=500\nmax_allowed_packet=67108864\ninnodb_buffer_pool_size=2147483648\ninnodb_redo_log_capacity=134217728"
+  --set pxc.configuration="[mysqld]\ninnodb_lock_wait_timeout=500\nmax_allowed_packet=67108864\ninnodb_buffer_pool_size=2147483648\ninnodb_redo_log_capacity=134217728" \
+  --set pxc.persistence.existingClaim=percona-hostpath-pvc
 
 
 # Wait for the pods to be ready
