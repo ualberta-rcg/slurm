@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "Install Percona XtraDB Helm Chart Repo"
+helm repo add percona https://percona.github.io/percona-helm-charts/
+helm repo update
 
 # Namespace for the cluster
 NAMESPACE="percona-db-cluster"
@@ -30,27 +33,7 @@ helm uninstall $OPERATOR_RELEASE --namespace $NAMESPACE &>/dev/null
 echo "Waiting for resources to terminate..."
 sleep 10
 
-# Install the operator
-echo "Installing the Percona XtraDB Cluster Operator..."
-helm install $OPERATOR_RELEASE percona/pxc-operator --namespace $NAMESPACE
-
 # Install the Percona XtraDB Cluster with custom values
-echo "Installing the Percona XtraDB Cluster with custom values..."
-# Namespace for the cluster
-NAMESPACE="percona-db-cluster"
-
-# Helm release names
-OPERATOR_RELEASE="paice-op"
-PXC_RELEASE="paice-db"
-
-# Values file
-VALUES_FILE="values.yaml"
-
-echo "Install Percona XtraDB Helm"
-helm repo add percona https://percona.github.io/percona-helm-charts/
-helm repo update
-
-
 echo "Installing the Percona XtraDB Cluster Operator..."
 helm install $OPERATOR_RELEASE percona/pxc-operator --namespace $NAMESPACE
 
