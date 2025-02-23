@@ -1,0 +1,41 @@
+# zabbix-postgres-values.yaml
+imagePullPolicy: Always
+postgresVersion: 16
+pause: false
+unmanaged: false
+
+instances:
+- name: instance1
+  replicas: 3
+  dataVolumeClaimSpec:
+    storageClassName: pg-manual
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 8Gi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              postgres-operator.crunchydata.com/data: postgres
+          topologyKey: kubernetes.io/hostname
+
+proxy:
+  pgBouncer:
+    replicas: 3
+
+backups:
+  pgbackrest:
+    repos:
+    - name: repo1
+      volume:
+        volumeClaimSpec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
