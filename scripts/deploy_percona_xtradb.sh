@@ -63,7 +63,6 @@ kubectl get pods --namespace $NAMESPACE
 kubectl get svc --namespace $NAMESPACE
 
 ROOT_PASSWORD=$(kubectl -n percona-db-cluster get secret paice-db-pxc-db-secrets -o jsonpath="{.data.root}" | base64 --decode)
-kubectl delete secret paice-db-pxc-db-secrets -n slurm
-kubectl create secret generic paice-db-pxc-db-secrets   --from-literal=root="$ROOT_PASSWORD"   -n slurm
+echo "Root DB Password: ${ROOT_PASSWORD}"
 
 echo "Cluster setup completed successfully."
