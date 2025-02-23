@@ -1,4 +1,4 @@
-# mongodb-graylog-values.yaml
+# percona-mongodb-graylog-values.yaml
 # Custom values for Percona Server for MongoDB deployment with local storage for Graylog
 
 # Basic cluster configuration
