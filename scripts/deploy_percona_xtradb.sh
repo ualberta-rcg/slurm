@@ -11,7 +11,7 @@ OPERATOR_RELEASE="paice-op"
 PXC_RELEASE="paice-db"
 
 # Values file
-VALUES_FILE="values.yaml"
+VALUES_FILE="xtradb-values.yaml"
 
 # Check if the namespace exists
 kubectl get namespace $NAMESPACE &>/dev/null
