@@ -53,6 +53,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
 RUN groupadd -r slurm && useradd -r -g slurm -s /bin/false slurm && \
     groupadd -g 1000 wwgroup && useradd -m -u 1000 -g wwgroup wwuser
 
+# Copy the Job Submit Script in. From Trailblazing Turtle. 
+COPY slurm_jobscripts.py /usr/local/bin/
+
 SHELL ["/bin/bash", "-c"]
 
 RUN mkdir -p /usr/src && cd /usr/src && \
