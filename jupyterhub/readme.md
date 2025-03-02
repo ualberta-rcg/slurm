@@ -20,7 +20,6 @@ Before deploying, ensure the following are set up:
 - An **LDAP server** integrated with `sssd` for authentication.
 - **cvmfs** configured for software access on Slurm Nodes (e.g., JupyterLab binaries).
 - A Kubernetes cluster with a dynamic **storage class** named `nfs-client`.
-- Installed dependencies: `sssd`, `munge`, and Slurm client tools (on host or in container).
 
 ## Directory Contents
 | File                  | Purpose                                                                 |
