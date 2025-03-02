@@ -7,7 +7,6 @@ The deployment integrates **Helm** for Kubernetes management, **NFS** for shared
 ## Features
 - **Customizable Job Submission**: Users define resource needs (CPU, memory, etc.) through a form.
 - **Slurm Integration**: Sessions run as Slurm jobs via batch and form spawners.
-- **Scalable Storage**: Dynamic NFS-based storage for user sessions.
 - **Secure Authentication**: LDAP integration via `sssd` for user management.
 - **Software Access**: Leverages `cvmfs` for pre-installed scientific software.
 
