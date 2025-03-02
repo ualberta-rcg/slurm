@@ -104,7 +104,7 @@ helm upgrade --install jupyterhub jupyterhub/jupyterhub -n jupyterhub -f values.
 - **Form**: Edit `form_template.html` to adjust input fields or options.
 
 ## Networking Details
-**MetalLB** exposes JupyterHub on the internal Slurm network (e.g., `172.16.254.39` as per `values.yaml`). This allows JupyterHub to communicate with Slurm for job submission and management.
+**MetalLB** exposes JupyterHub on the internal Slurm network (e.g., `172.16.254.39` as per `values.yaml`). This allows JupyterHub to communicate with Slurm for job submission and management. You will want to update the MetalLB values, and yaml to work with your Slurm network.
 
 ## Troubleshooting
 - **Logs**: Check `kubectl -n jupyterhub logs <pod-name>` for errors.
