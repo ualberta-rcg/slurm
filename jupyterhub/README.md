@@ -7,7 +7,7 @@ The deployment integrates **Helm** for Kubernetes management, **NFS** for shared
 ## Features
 - **Customizable Job Submission**: Users define resource needs (CPU, memory, etc.) through a form.
 - **Slurm Integration**: Sessions run as Slurm jobs via batch and form spawners.
-- **Secure Authentication**: LDAP integration via `sssd` for user management.
+- **Secure Authentication**: LDAP integration via the JupyterHub Values, along with LDAP via `sssd` for Slurm job submission.
 - **Software Access**: Leverages `cvmfs` for pre-installed scientific software.
 
 ## Prerequisites
@@ -55,6 +55,8 @@ Edit the provided `values.yaml` file:
 - **LDAP Settings**: Update the private LDAP settings (e.g., server, bind DN) to match your environment.
 - **NFS Mounts**: Verify paths for `nfs-slurm-config`, `nfs-munge-key`, and `nfs-sssd`.
 - **Image**: Set to `rkhoja/slurm:jupyterhub` with `pullPolicy: Always`.
+
+> **Note**: Both the values.yaml LDAP section needs to be filled out, and the SSSD configuration file for Authentication to fully work. SSSD is required for Slurm job submission, LDAP in the values.yaml is for Web access. Both need to talk to the same LDAP server.
 
 ### 4. Deploy with Helm
 Follow these steps to deploy JupyterHub:
