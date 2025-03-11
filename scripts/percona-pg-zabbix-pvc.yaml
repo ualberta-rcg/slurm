@@ -1,0 +1,66 @@
+# pv-pvc.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-postgres-pv-mgmt1
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: pg-manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt1  # Primary PostgreSQL node
+  hostPath:
+    path: /mnt/pg-zabbix
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-postgres-pv-mgmt2
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: pg-manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt2  # Replica 1
+  hostPath:
+    path: /mnt/pg-zabbix
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-postgres-pv-mgmt3
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: pg-manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt3  # Replica 2
+  hostPath:
+    path: /mnt/pg-zabbix

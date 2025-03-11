@@ -1,3 +1,19 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: slurmrestd-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 172.16.254.44-172.16.254.44
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: slurmrestd-advertisement
+  namespace: metallb-system
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -16,9 +32,6 @@ spec:
       - ip: "127.0.0.1"
         hostnames:
         - "slurmrestd"
-      - ip: "192.168.1.24"
-        hostnames:
-        - "slurmrestd"
       containers:
       - name: slurmrestd
         image: rkhoja/slurm:slurmrestd
@@ -33,16 +46,16 @@ spec:
 #        command: ["/bin/bash", "-c"]
 #        args:
 #          - |
-#            tail -f /dev/null          
+#            tail -f /dev/null
       volumes:
       - name: nfs-munge-key
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/munge
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/munge
       - name: slurm-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/slurm
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/slurm
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -65,7 +78,7 @@ spec:
     clientIP:
       timeoutSeconds: 10800  # 3 hours
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.24
+  loadBalancerIP: 172.16.254.44
   externalTrafficPolicy: Cluster
   internalTrafficPolicy: Cluster
   ipFamilies:

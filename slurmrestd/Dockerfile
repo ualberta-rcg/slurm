@@ -67,6 +67,8 @@ RUN cd /tmp && \
         echo "No .deb packages to install."; \
     fi 
 
+RUN apt-get upgrade -y
+
 COPY entrypoint.sh /entrypoint.sh
 
 # Clean Up
