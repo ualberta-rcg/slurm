@@ -23,6 +23,13 @@ chmod 644 /etc/slurm/*.conf
 chmod 660 "$JWT_KEY_PATH"
 chown -R munge:munge /run/munge
 
+# Setup SSSD
+cp -r /etc/sssd/.secret/* /etc/sssd
+chmod 700 /etc/sssd
+chmod 600 /etc/sssd/sssd.conf
+chown root:root /etc/sssd
+chown root:root /etc/sssd/sssd.conf
+
 # Setup Munge
 cp /etc/munge/.secret/munge.key /etc/munge/munge.key
 chown munge:munge -R /etc/munge

@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-hostpath-pv-mgmt1
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt1  # Ensure this PV is only bound on mgmt1
+  hostPath:
+    path: /mnt/percona
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-hostpath-pv-mgmt2
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt2  # Ensure this PV is only bound on mgmt2
+  hostPath:
+    path: /mnt/percona
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: percona-hostpath-pv-mgmt3
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mgmt3  # Ensure this PV is only bound on mgmt3
+  hostPath:
+    path: /mnt/percona
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datadir-paice-db-pxc-db-pxc-0  # Matches pod 0
+  namespace: percona-db-cluster
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: manual
+  volumeName: percona-hostpath-pv-mgmt1  # Matches mgmt1
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datadir-paice-db-pxc-db-pxc-1  # Matches pod 1
+  namespace: percona-db-cluster
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: manual
+  volumeName: percona-hostpath-pv-mgmt2  # Matches mgmt2
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datadir-paice-db-pxc-db-pxc-2  # Matches pod 2
+  namespace: percona-db-cluster
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: manual
+  volumeName: percona-hostpath-pv-mgmt3  # Matches mgmt3

@@ -15,7 +15,11 @@ hub:
     ingress:
       - from:
           - ipBlock:
-              cidr: 192.168.1.0/23
+              cidr: 172.16.254.0/23
+          - ipBlock:
+              cidr: 10.42.0.0/16
+          - ipBlock:
+              cidr: 150.136.58.171/32
         ports:
           - port: 8081
             protocol: TCP
@@ -28,7 +32,7 @@ hub:
 
   service:
     type: LoadBalancer
-    loadBalancerIP: "192.168.1.15"
+    loadBalancerIP: "172.16.254.39"
 
   image:
     name: rkhoja/slurm
@@ -39,14 +43,15 @@ hub:
     00-sssd: |
       import os
       import subprocess
+      os.system("sudo chown -R root:root /etc/sssd ")
       os.system("sudo /usr/sbin/sssd -i -d 9 &")
 
-    01-munge: |
+    02-munge: |
       import os
       import random
       import subprocess
       os.system("cp /mnt/nfs-munge/munge.key /etc/munge/munge.key")
-      os.system("sudo  munged --foreground --force --verbose &")
+      os.system("sudo  munged --foreground --force --verbose &" )
 
     spawner: |
       import batchspawner
@@ -54,13 +59,17 @@ hub:
       from string import Template
 
       class CustomFormSpawner(SlurmSpawner):
+
+          batchspawner_singleuser_cmd = "/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/batchspawner-singleuser"
+          # /cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/jupyterhub-singleuser --KernelSpecManager.ensure_native_kernel=False --debug"
+
           def _options_form_default(self):
               with open('/etc/jupyterhub/form_template.html', 'r') as f:
                   return f.read()
 
           def options_from_form(self, formdata):
               options = {}
-              options['partition'] = formdata.get('req_partition', ['eureka'])[0]  
+              options['partition'] = formdata.get('req_partition', ['eureka'])[0]  # Partition is 'eureka'
               options['gpus'] = int(formdata.get('req_gpus', ['0'])[0])
               options['runtime'] = formdata.get('req_runtime', ['02:00:00'])[0]
               options['ntasks'] = int(formdata.get('req_ntasks', ['1'])[0])
@@ -74,12 +83,14 @@ hub:
 
           async def start(self):
               # Ensure required parameters are set via user_options
-              self.req_partition = self.user_options.get('partition', 'eureka')  
+              self.req_partition = self.user_options.get('partition', 'eureka')  # Ensure partition is set to eureka
               self.req_gpus = self.user_options.get('gpus', 0)
               self.req_runtime = self.user_options.get('runtime', '02:00:00')
               self.req_ntasks = self.user_options.get('ntasks', 1)
               self.req_cores = self.user_options.get('cores', 1)
               self.req_ram = self.user_options.get('ram', 4)  # Default to 4GB
+
+              self.cmd = ["/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/jupyterhub-singleuser --KernelSpecManager.ensure_native_kernel=False --debug"]
 
               # Read the batch template – no substitution here yet!
               with open('/etc/jupyterhub/batch_template.sh', 'r') as f:
@@ -96,10 +107,10 @@ hub:
       #admin_access: true
       log_level: DEBUG
       cleanup_servers: false
-      hub_connect_ip: "192.168.1.15"
+      hub_connect_ip: "172.16.254.39"
       authenticator_class: ldapauthenticator.LDAPAuthenticator
     LDAPAuthenticator:
-      server_address:  [SECRET-REPLACE-THIS]
+      server_address:  [UPDATE ME]
       server_port: 636
       tls_strategy: on_connect
       bind_dn_template:
@@ -137,16 +148,16 @@ hub:
   extraVolumes:
     - name: nfs-slurm-config
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/slurm
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/slurm
     - name: nfs-munge-key
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/munge
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/munge
     - name: nfs-sssd
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/sssd
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/sssd
     - name: munge-socket
       emptyDir: {}
 

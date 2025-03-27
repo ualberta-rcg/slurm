@@ -9,9 +9,9 @@ fi
 chown slurm:slurm /etc/slurm/slurmdbd.conf
 chmod 600 /etc/slurm/slurmdbd.conf
 
-# Munge
+# Setup Munge
 mkdir /run/munge 
-cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
+cp /etc/munge/.secret/munge.key /etc/munge/munge.key
 chown munge:munge -R /etc/munge /run/munge 
 chmod 400 /etc/munge/munge.key
 
