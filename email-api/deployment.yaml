@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-api
+  labels:
+    app: email-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-api
+  template:
+    metadata:
+      labels:
+        app: email-api
+    spec:
+      containers:
+      - name: email-api
+        image: ghcr.io/rkhoja/slurm:email-api
+        ports:
+        - containerPort: 5000
+        env:
+        - name: LDAP_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: email-api-secret
+              key: ldap_server
+        - name: LDAP_BIND_DN
+          valueFrom:
+            secretKeyRef:
+              name: email-api-secret
+              key: ldap_bind_dn
+        - name: LDAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: email-api-secret
+              key: ldap_password
+        - name: LDAP_BASE_DN
+          valueFrom:
+            secretKeyRef:
+              name: email-api-secret
+              key: ldap_base_dn
+        - name: BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: email-api-secret
+              key: bearer_token
+        readinessProbe:
+          httpGet:
+            path: /email?user=test
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-api
+spec:
+  type: ClusterIP
+  selector:
+    app: email-api
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+---
+# secret.yaml (placeholder, should be created securely)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: email-api-secret
+stringData:
+  ldap_server: "ldaps://yourldapserver"
+  ldap_bind_dn: "uid=amiildapreader,ou=People,dc=computecanada,dc=ca"
+  ldap_password: "your-secret-password"
+  ldap_base_dn: "dc=computecanada,dc=ca"
+  bearer_token: "your-bearer-token"
