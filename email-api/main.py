@@ -28,3 +28,6 @@ def get_email():
         email = conn.entries[0].ccPrimaryEmail.value
         return jsonify({'email': email})
     return jsonify({'error': 'Not found'}), 404
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
