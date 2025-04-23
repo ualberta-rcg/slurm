@@ -29,5 +29,9 @@ def get_email():
         return jsonify({'email': email})
     return jsonify({'error': 'Not found'}), 404
 
+@app.route('/healthz')
+def health_check():
+    return jsonify({"status": "ok"}), 200
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
