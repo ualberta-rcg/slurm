@@ -39,7 +39,7 @@ chmod 400 /etc/munge/munge.key
 su -s /bin/bash -c "/usr/sbin/munged --foreground --log-file=/var/log/munge/munge.log &" munge
 
 # Start sssd in the background
-su -s /bin/bash -c "/usr/sbin/sssd -i -d 9 &" root
+su -s /bin/bash -c "/usr/sbin/sssd -i -d 6 &" root
 
 # Wait briefly for munge to start
 sleep 2
@@ -58,7 +58,8 @@ while ! sacctmgr show cluster &>/dev/null; do
 done
 
 # Start Job Submit Script
-su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py --verbose &" root
+su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py &" root
+#su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py --verbose &" root
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/usr/sbin/slurmctld $*"
