@@ -1,0 +1,51 @@
+apiVersion: v1
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        kubernetes  cluster.local  cluster.local in-addr.arpa ip6.arpa {
+            pods insecure
+            fallthrough in-addr.arpa ip6.arpa
+            ttl 30
+        }
+        hosts {
+          172.16.254.40  slurmdbd
+          172.16.254.41  slurmctld-1
+          172.16.254.42  slurmctld-2
+          172.16.254.43  slurmctld-3
+          172.16.254.44  slurmrestd
+          172.16.254.2  mgmt1
+          172.16.254.3  mgmt2
+          172.16.254.4  mgmt3
+          172.16.254.100 eureka-1-1
+          fallthrough
+        }
+        prometheus  0.0.0.0:9153
+        forward  . /etc/resolv.conf
+        cache  30
+        loop
+        reload
+        loadbalance
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: rke2-coredns
+    meta.helm.sh/release-namespace: kube-system
+  creationTimestamp: "2025-02-20T04:01:04Z"
+  labels:
+    app.kubernetes.io/instance: rke2-coredns
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rke2-coredns
+    helm.sh/chart: rke2-coredns-1.36.102
+    k8s-app: kube-dns
+    kubernetes.io/cluster-service: "true"
+    kubernetes.io/name: CoreDNS
+  name: rke2-coredns-rke2-coredns
+  namespace: kube-system
+  resourceVersion: "1424774"
+  uid: b25da34b-fa87-4ffa-97d3-d6c2d92fe646

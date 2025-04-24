@@ -1,0 +1,16 @@
+pxc:
+  configuration: |
+    [mysqld]
+    innodb_buffer_pool_size=2G
+    innodb_lock_wait_timeout=5
+    
+  persistence:
+    enabled: true
+    existingClaim: "datadir-paice-db-pxc-db-pxc-0"  
+    storageClass: "" 
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
+    finalizers:
+      - kubernetes.io/pvc-protection

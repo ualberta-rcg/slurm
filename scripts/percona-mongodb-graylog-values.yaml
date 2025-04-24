@@ -1,0 +1,42 @@
+# percona-mongodb-graylog-values.yaml
+# Custom values for Percona Server for MongoDB deployment with local storage for Graylog
+
+# Basic cluster configuration
+pause: false
+unmanaged: false
+
+# Image configuration
+imagePullPolicy: Always
+
+# Replica set configuration (rs0)
+replsets:
+  rs0:
+    name: rs0
+    size: 3  # 3-node replica set for high availability
+    affinity:
+      antiAffinityTopologyKey: "kubernetes.io/hostname"  # Spread pods across nodes
+    podDisruptionBudget:
+      maxUnavailable: 1  # Allow one pod to be down during maintenance
+    resources:
+      limits:
+        cpu: "300m"
+        memory: "0.5G"
+      requests:
+        cpu: "300m"
+        memory: "0.5G"
+    volumeSpec:
+      hostPath:
+        path: /mnt/mongodb-graylog  # Local storage path
+        type: DirectoryOrCreate     # Creates the directory if it doesn’t exist
+
+# Sharding (disabled for simplicity, as Graylog typically doesn’t need it)
+sharding:
+  enabled: false
+
+# Backup (optional, disabled by default unless you need it)
+backup:
+  enabled: false
+
+# Name overrides for consistency with your Helm install command
+nameOverride: "mongodb-graylog"
+fullnameOverride: "mongodb-graylog"

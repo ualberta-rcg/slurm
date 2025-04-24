@@ -5,13 +5,13 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 192.168.1.10-192.168.1.12
+    - 172.16.254.41-172.16.254.43
 
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
-  name: jupyterhub-advertisement
+  name: slurmctld-advertisement
   namespace: metallb-system
 ---
 apiVersion: apps/v1
@@ -65,20 +65,20 @@ spec:
       volumes:
       - name: nfs-munge-key
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/munge
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/munge
       - name: slurm-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/slurm
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/slurm
       - name: slurmctld-state
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/var/spool/slurmctld/
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/var/spool/slurmctld/
       - name: sssd-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/sssd
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/sssd
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
@@ -106,15 +106,16 @@ spec:
     clientIP:
       timeoutSeconds: 10800
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.10
+  loadBalancerIP: 172.16.254.41
   externalTrafficPolicy: Local
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
   loadBalancerSourceRanges:
-    - 192.168.1.0/24
+    - 172.16.254.0/24
     - 10.42.0.0/16
+    - 10.43.0.0/16
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -161,20 +162,20 @@ spec:
       volumes:
       - name: nfs-munge-key
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/munge
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/munge
       - name: slurm-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/slurm
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/slurm
       - name: slurmctld-state
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/var/spool/slurmctld/
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/var/spool/slurmctld/
       - name: sssd-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/sssd
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/sssd
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
@@ -202,15 +203,16 @@ spec:
     clientIP:
       timeoutSeconds: 10800
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.11
+  loadBalancerIP: 172.16.254.42
   externalTrafficPolicy: Local
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
   loadBalancerSourceRanges:
-    - 192.168.1.0/24
+    - 172.16.254.0/24
     - 10.42.0.0/16
+    - 10.43.0.0/16
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -257,20 +259,20 @@ spec:
       volumes:
       - name: nfs-munge-key
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/munge
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/munge
       - name: slurm-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/slurm
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/slurm
       - name: slurmctld-state
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/var/spool/slurmctld/
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/var/spool/slurmctld/
       - name: sssd-config
         nfs:
-          server: 192.168.1.1
-          path: /disks/slurm/etc/sssd
+          server: 172.16.254.10
+          path: /mnt/storage-1/slurm/etc/sssd
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
@@ -298,12 +300,13 @@ spec:
     clientIP:
       timeoutSeconds: 10800
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.12
+  loadBalancerIP: 172.16.254.43
   externalTrafficPolicy: Local
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
   ipFamilyPolicy: SingleStack
   loadBalancerSourceRanges:
-    - 192.168.1.0/24
+    - 172.16.254.0/24
     - 10.42.0.0/16
+    - 10.43.0.0/16

@@ -23,6 +23,13 @@ chmod 644 /etc/slurm/*.conf
 chmod 660 "$JWT_KEY_PATH"
 chown -R munge:munge /run/munge
 
+# Setup SSSD
+cp -r /etc/sssd/.secret/* /etc/sssd
+chmod 700 /etc/sssd
+chmod 600 /etc/sssd/sssd.conf
+chown root:root /etc/sssd
+chown root:root /etc/sssd/sssd.conf
+
 # Setup Munge
 cp /etc/munge/.secret/munge.key /etc/munge/munge.key
 chown munge:munge -R /etc/munge
@@ -32,7 +39,7 @@ chmod 400 /etc/munge/munge.key
 su -s /bin/bash -c "/usr/sbin/munged --foreground --log-file=/var/log/munge/munge.log &" munge
 
 # Start sssd in the background
-su -s /bin/bash -c "/usr/sbin/sssd -i -d 9 &" root
+su -s /bin/bash -c "/usr/sbin/sssd -i -d 6 &" root
 
 # Wait briefly for munge to start
 sleep 2
@@ -51,7 +58,8 @@ while ! sacctmgr show cluster &>/dev/null; do
 done
 
 # Start Job Submit Script
-su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py --verbose &" root
+su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py &" root
+#su -s /bin/bash -c "/usr/bin/python3 /usr/local/bin/slurm_jobscripts.py --verbose &" root
 
 # Run slurmctld as the slurm user
 exec su -s /bin/bash slurm -c "/usr/sbin/slurmctld $*"

@@ -15,7 +15,11 @@ hub:
     ingress:
       - from:
           - ipBlock:
-              cidr: 192.168.1.0/23
+              cidr: 172.16.254.0/23
+          - ipBlock:
+              cidr: 10.42.0.0/16
+          - ipBlock:
+              cidr: 150.136.58.171/32
         ports:
           - port: 8081
             protocol: TCP
@@ -28,7 +32,7 @@ hub:
 
   service:
     type: LoadBalancer
-    loadBalancerIP: "192.168.1.15"
+    loadBalancerIP: "172.16.254.39"
 
   image:
     name: rkhoja/slurm
@@ -39,6 +43,7 @@ hub:
     00-sssd: |
       import os
       import subprocess
+      os.system("sudo chown -R root:root /etc/sssd ")
       os.system("sudo /usr/sbin/sssd -i -d 9 &")
 
     02-munge: |
@@ -56,7 +61,8 @@ hub:
       class CustomFormSpawner(SlurmSpawner):
 
           batchspawner_singleuser_cmd = "/cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/batchspawner-singleuser"
-          
+          # /cvmfs/soft.computecanada.ca/custom/python/envs/jupyterhub_node/v4.3.13/bin/jupyterhub-singleuser --KernelSpecManager.ensure_native_kernel=False --debug"
+
           def _options_form_default(self):
               with open('/etc/jupyterhub/form_template.html', 'r') as f:
                   return f.read()
@@ -98,12 +104,13 @@ hub:
 
   config:
     JupyterHub:
+      #admin_access: true
       log_level: DEBUG
       cleanup_servers: false
-      hub_connect_ip: "192.168.1.15"
+      hub_connect_ip: "172.16.254.39"
       authenticator_class: ldapauthenticator.LDAPAuthenticator
     LDAPAuthenticator:
-      server_address:  [REPLACE ME]
+      server_address:  [UPDATE ME]
       server_port: 636
       tls_strategy: on_connect
       bind_dn_template:
@@ -141,16 +148,16 @@ hub:
   extraVolumes:
     - name: nfs-slurm-config
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/slurm
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/slurm
     - name: nfs-munge-key
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/munge
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/munge
     - name: nfs-sssd
       nfs:
-        server: 192.168.1.1
-        path: /disks/slurm/etc/sssd
+        server: 172.16.254.10
+        path: /mnt/storage-1/slurm/etc/sssd
     - name: munge-socket
       emptyDir: {}
 

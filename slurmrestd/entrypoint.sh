@@ -23,8 +23,9 @@ chown -R slurm:slurm /var/spool/slurmd /var/log/slurm/ /var/run/slurm /etc/slurm
 chmod 644 /etc/slurm/*.conf
 
 # Setup Munge
-cp /etc/munge/.secret/munge.keyfile /etc/munge/munge.key
-chown munge:munge -R /etc/munge
+mkdir /run/munge 
+cp /etc/munge/.secret/munge.key /etc/munge/munge.key
+chown munge:munge -R /etc/munge /run/munge 
 chmod 400 /etc/munge/munge.key
 
 # Start munged in the background
