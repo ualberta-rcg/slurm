@@ -89,4 +89,5 @@ EXPOSE 6817
 
 # Entry point
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-CMD ["-D", "-R", "-vvv", "-i", "-s"]
+#CMD ["-D", "-R", "-vvv", "-i", "-s"]
+CMD ["-D", "-R", "-i", "-s"]
