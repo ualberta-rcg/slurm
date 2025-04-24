@@ -65,4 +65,5 @@ EXPOSE 6819
 
 # Entry point
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["-Dvvv", "-s"]
+#CMD ["-Dvvv", "-s"]
+CMD ["-D", "-s"]
