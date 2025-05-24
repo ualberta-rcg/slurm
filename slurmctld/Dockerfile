@@ -50,8 +50,6 @@ tls_starttls   on
 tls_trust_file /etc/ssl/certs/ca-certificates.crt
 logfile        /var/log/msmtp.log
 
-RUN cat /etc/msmtprc 
-
 account default
 host smtp.ualberta.ca
 port 25
@@ -59,6 +57,8 @@ from vulcan-slurm-alerts@westdri.ca
 EOF
 
 RUN chmod 600 /etc/msmtprc
+
+RUN cat /etc/msmtprc 
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
