@@ -42,14 +42,15 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && ls -l
 
-RUN mkdir -p /etc && \
-    cat > /etc/msmtprc <<EOF
+RUN cat > /etc/msmtprc <<EOF
 defaults
 auth           off
 tls            on
 tls_starttls   on
 tls_trust_file /etc/ssl/certs/ca-certificates.crt
 logfile        /var/log/msmtp.log
+
+RUN cat /etc/msmtprc 
 
 account default
 host smtp.ualberta.ca
