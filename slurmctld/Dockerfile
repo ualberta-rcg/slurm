@@ -36,6 +36,10 @@ RUN apt-get update && apt-get install -y \
     libpam-ldapd \
     python3 \
     python3-requests \
+    bsd-mailx \
+    msmtp \
+    msmtp-mta \
+    ca-certificates \
     && ls -l
 
 # Copy all .deb files into the container
