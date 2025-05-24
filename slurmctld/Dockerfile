@@ -56,7 +56,7 @@ port 25
 from vulcan-slurm-alerts@westdri.ca
 EOF
 
-RUN chmod 600 /etc/msmtprc
+RUN chmod 644 /etc/msmtprc
 
 RUN cat /etc/msmtprc 
 
