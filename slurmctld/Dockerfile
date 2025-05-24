@@ -42,12 +42,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && ls -l
 
-RUN apt-get update && apt-get install -y \
-    bsd-mailx \
-    msmtp \
-    msmtp-mta \
-    ca-certificates && \
-    mkdir -p /etc && \
+RUN mkdir -p /etc && \
     cat > /etc/msmtprc <<EOF
 defaults
 auth           off
