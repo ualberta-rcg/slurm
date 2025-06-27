@@ -36,7 +36,29 @@ RUN apt-get update && apt-get install -y \
     libpam-ldapd \
     python3 \
     python3-requests \
+    bsd-mailx \
+    msmtp \
+    msmtp-mta \
+    ca-certificates \
     && ls -l
+
+RUN cat > /etc/msmtprc <<EOF
+defaults
+auth           off
+tls            on
+tls_starttls   on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        /var/log/msmtp.log
+
+account default
+host smtp.ualberta.ca
+port 25
+from vulcan-slurm-alerts@westdri.ca
+EOF
+
+RUN chmod 644 /etc/msmtprc
+
+RUN cat /etc/msmtprc 
 
 # Copy all .deb files into the container
 COPY *.deb /tmp/
