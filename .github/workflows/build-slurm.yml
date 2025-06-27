@@ -171,6 +171,8 @@ jobs:
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
           set -e
+          cd "$GITHUB_WORKSPACE"
+
           OS_CODENAME="debian12" 
           
           git config --global user.name "github-actions[bot]"
