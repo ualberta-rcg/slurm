@@ -99,8 +99,8 @@ jobs:
       - name: 🛠 Install Build Dependencies
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y \
             devscripts equivs build-essential fakeroot debhelper curl jq git \
             libpmix-dev libpmix2 libopenmpi-dev libopenmpi3 openmpi-bin libnvidia-ml-dev
 
@@ -121,7 +121,7 @@ jobs:
           set -e
           cd /tmp/slurm/slurm-src
           # Use mk-build-deps to install dependencies from debian/control
-          sudo mk-build-deps -ir --tool='apt-get -qq -y ' debian/control
+          mk-build-deps -ir --tool='apt-get -qq -y ' debian/control
           # Build binary packages only, without signing
           debuild -b -uc -us
 
