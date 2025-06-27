@@ -70,7 +70,7 @@ jobs:
           version="${{ steps.vars.outputs.version }}"
           debver="$(echo "$version" | sed 's/^\([0-9]*\)-\([0-9]*\)-\([0-9]*\)-\([0-9]*\)$/\1.\2.\3-\4/')"
           debdir="$GITHUB_WORKSPACE/slurm-debs"
-          OS_CODENAME="u2404" 
+          OS_CODENAME="debian12" 
 
           echo "🔍 Inputs:"
           echo "  Raw version       = $version"
