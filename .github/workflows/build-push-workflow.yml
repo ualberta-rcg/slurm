@@ -29,7 +29,7 @@ jobs:
 
       - name: 📂 Copy .deb Files to Branch Directory
         run: |
-          cp -v slurm-debs/*u2404.deb ./${BRANCH}/   
+          cp -v slurm-debs/*debian12.deb ./${BRANCH}/   
 
       - name: 🐳 Build Docker Image
         run: |
