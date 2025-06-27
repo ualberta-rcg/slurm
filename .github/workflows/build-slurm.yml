@@ -31,6 +31,8 @@ jobs:
         id: vars
         run: |
           set -e # Exit on error
+
+          apt-get install -y curl wget jq
           
           # Use the manual dispatch input first, then the repo variable as a fallback
           VERSION_OVERRIDE="${{ github.event.inputs.SLURM_VERSION_OVERRIDE || vars.SLURM_VERSION_OVERRIDE }}"
