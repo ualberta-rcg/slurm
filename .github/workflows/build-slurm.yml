@@ -32,7 +32,29 @@ jobs:
         run: |
           set -e # Exit on error
 
-          apt-get update && apt-get install -y curl wget jq
+          apt-get update && apt-get install -y sudo \
+            curl \
+            wget \
+            git \
+            jq \
+            ca-certificates \
+            gnupg \
+            devscripts \
+            equivs \
+            build-essential \
+            fakeroot \
+            debhelper \
+            lsb-release \
+            libpmix-dev \
+            libpmix2 \
+            libopenmpi-dev \
+            libopenmpi3 \
+            openmpi-bin \
+            libhwloc-dev \
+            libmunge-dev \
+            libnss3-tools \
+            pkg-config \
+            unzip
           
           # Use the manual dispatch input first, then the repo variable as a fallback
           VERSION_OVERRIDE="${{ github.event.inputs.SLURM_VERSION_OVERRIDE || vars.SLURM_VERSION_OVERRIDE }}"
