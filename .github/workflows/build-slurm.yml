@@ -149,7 +149,7 @@ jobs:
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
           set -e
-          OS_CODENAME="u2404" # Change to ${{ matrix.os_codename }} if using a matrix
+          OS_CODENAME="debian12" 
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
