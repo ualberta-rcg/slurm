@@ -147,32 +147,41 @@ jobs:
           # Build binary packages only, without signing
           debuild -b -uc -us
 
-      - name: 📁 Rename and Move DEBs to Repo
+      - name: 📁 Clone Repo and Move DEBs
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
           set -e
           OS_CODENAME="debian12"
-          DEST_DIR="$GITHUB_WORKSPACE/slurm-debs"
+          
+          # Clone the repository fresh
+          cd /tmp
+          git clone https://github.com/${{ github.repository }}.git repo-clone
+          cd repo-clone
+          
+          # Switch to the correct branch
+          git checkout ${{ github.ref_name }}
+          
+          # Create destination directory
+          DEST_DIR="/tmp/repo-clone/slurm-debs"
           mkdir -p "$DEST_DIR"
-
+          
           echo "🧹 Cleaning up old DEBs for ${OS_CODENAME}..."
           find "$DEST_DIR" -name "*_${OS_CODENAME}.deb" -type f -delete || true
-
+          
           echo "📦 Moving new DEBs with renamed suffix..."
           for deb in /tmp/slurm/*.deb; do
             base=$(basename "$deb" .deb)
             mv "$deb" "$DEST_DIR/${base}_${OS_CODENAME}.deb"
           done
-
+          
           echo "📂 Final contents of $DEST_DIR:"
           ls -l "$DEST_DIR"
-
+          
       - name: 📤 Commit and Push DEBs
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
           set -e
-          cd "$GITHUB_WORKSPACE"
-
+          cd /tmp/repo-clone
           OS_CODENAME="debian12" 
           
           git config --global user.name "github-actions[bot]"
@@ -183,9 +192,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Add Slurm DEBs (v${{ steps.vars.outputs.version }}) for Ubuntu ${OS_CODENAME}"
-            git push
+            git commit -m "Add Slurm DEBs (v${{ steps.vars.outputs.version }}) for Debian ${OS_CODENAME}"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.ref_name }}
           fi
-        env:
-          # Use a PAT if you have branch protection rules that GITHUB_TOKEN can't bypass
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
