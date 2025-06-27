@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-debs:
-    runs-on: ubuntu-24.04
+    runs-on: debian:bullseye-slim
 
     outputs:
       version: ${{ steps.vars.outputs.version }}
@@ -125,7 +125,7 @@ jobs:
         if: steps.version-check.outputs.skip_build == 'false'
         run: |
           set -e
-          OS_CODENAME="u2404"
+          OS_CODENAME="debian12"
           DEST_DIR="$GITHUB_WORKSPACE/slurm-debs"
           mkdir -p "$DEST_DIR"
 
