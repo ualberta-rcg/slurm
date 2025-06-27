@@ -12,7 +12,9 @@ on:
 
 jobs:
   build-debs:
-    runs-on: debian:bullseye-slim
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye-slim
 
     outputs:
       version: ${{ steps.vars.outputs.version }}
